@@ -1,0 +1,70 @@
+ body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      width: 100%;
+      height: 100vh;
+    }
+
+    /* Container with floorplan */
+    .floorplan-container {
+      position: relative;
+      flex: 1;
+      margin: 50px;
+      align-items: center;
+      justify-content: center;
+    display: flex;
+    background: #e0e0e0;
+    border-radius: 25px;
+  border: 2px solid #000000;
+  background-image: url(floorplan.png);
+  background-size: contain;
+    background-repeat: no-repeat;
+
+    }
+
+    /* Table buttons */
+    .table-btn {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      background: transparent;
+      border: 2px solid #4a90e2;
+      border-radius: 6px;
+      color: #4a90e2;
+      font-size: 14px;
+      cursor: pointer;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .table-btn:hover {
+      background: rgb(99, 101, 102);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 0;
+      height: 100vh;
+      background: #f8f8f8;
+      overflow-x: hidden;
+      transition: 0.3s;
+      padding: 20px;
+      box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+    }
+
+    .sidebar.open {
+      width: 250px;
+    }
+
+    .close-btn {
+      cursor: pointer;
+      background: red;
+      color: white;
+      padding: 5px 10px;
+      border: none;
+      float: right;
+    }

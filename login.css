@@ -1,0 +1,45 @@
+/* Style for the Login Page */
+.container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 80vh;
+}
+.login-box {
+        background: #fff;
+        padding: 32px 24px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        width: 320px;
+}
+.login-box h2 {
+        margin-bottom: 24px;
+        text-align: center;
+}
+.login-box label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+}
+.login-box input[type="text"],
+.login-box input[type="password"] {
+        width: 90%;
+        padding: 8px;
+        margin-bottom: 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+}
+.login-box button {
+        width: 100%;
+        padding: 10px;
+        background: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+}
+.login-box button:hover {
+        background: #0056b3;
+}
