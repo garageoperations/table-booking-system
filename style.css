@@ -30,11 +30,10 @@
     /* Table buttons */
     .table-btn {
       position: absolute;
-      width: 95px;
-      height: 80px;
+      width: 60px;
+      height: 60px;
       background: #ffffff;
       opacity: 0.6;
-      border: 2px solid #4a90e2;
       border-radius: 6px;
       color: #000000;
       font-size: 14px;
@@ -46,9 +45,29 @@
       transition: background 0.2s, color 0.2s;
     }
 
-    .table-btn:hover {
+    .chair-btn {
+      position: absolute;
+      width: 27px;
+      height: 27px;
+      background: #ffffff;
+      opacity: 0.6;
+      border-radius: 6px;
+      color: #000000;
+      font-size: 12px;
+      cursor: pointer;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .table-btn:hover,
+    .table-btn:hover ~ .chair-btn,
+    .chair-btn:hover {
       background: rgb(99, 101, 102);
     }
+
 
     /* Sidebar */
     .sidebar {
