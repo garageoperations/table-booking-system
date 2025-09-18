@@ -1,12 +1,3 @@
- body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      display: flex;
-      height: 100vh;
-      width: auto;
-      align-items: center;
-    }
-
     /* Container with floorplan */
     .floorplan-container {
       position: relative;
@@ -71,24 +62,27 @@
 
     /* Sidebar */
     .sidebar {
-      width: 0;
-      height: 100vh;
+      position: fixed;
+      top: 0;
+      right: -500px;   /* hidden offscreen */
+      width: 300px;
+      height: 100%;
       background: #f8f8f8;
-      overflow-x: hidden;
-      transition: 0.3s;
+      border-left: 2px solid #ccc;
+      box-shadow: -2px 0 5px rgba(0,0,0,0.2);
       padding: 20px;
-      box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+      transition: right 0.3s ease;
+      overflow-y: auto;
     }
 
     .sidebar.open {
-      width: 250px;
+      right: 0; /* slides into view */
     }
 
-    .close-btn {
-      cursor: pointer;
-      background: red;
-      color: white;
-      padding: 5px 10px;
+    #closeSidebar {
+      background: none;
       border: none;
+      font-size: 18px;
+      cursor: pointer;
       float: right;
     }

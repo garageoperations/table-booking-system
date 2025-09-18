@@ -2,12 +2,12 @@
   "layout": {
     "table": { "top": 49, "left": 59 },
     "chairs": [
-      { "top": 6, "left": -28 },   
       { "top": 33, "left": -28 },
-      { "top": 6, "left": 61 },
-      { "top": 33, "left": 61 },
+      { "top": 6, "left": -28 },   
       { "top": -27, "left": 3 },
-      { "top": -27, "left": 30 }
+      { "top": -27, "left": 30 },
+      { "top": 6, "left": 61 },
+      { "top": 33, "left": 61 }
     ]
   },
   "tables": [
