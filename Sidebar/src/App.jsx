@@ -1,16 +1,18 @@
 import BookingSidebar from './components/BookingSidebar';
+import Floorplan from './components/Floorplan';
+import { useSidebarStore } from './lib/sidebarStore';
 
 function App() {
+
+  const isSidebarOpen = useSidebarStore((state) => state.isSidebarOpen);
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
       {/* Main Content */}
-      <div style={{ flex: 1, padding: '2rem' }}>
-        <h1>Main Content Area</h1>
-        <p>Your existing content goes here...</p>
-      </div>
-
+      <Floorplan/>
       {/* Booking Sidebar on Right */}
+      {isSidebarOpen &&
       <BookingSidebar />
+}
     </div>
   );
 }

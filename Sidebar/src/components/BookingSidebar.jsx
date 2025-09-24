@@ -1,8 +1,11 @@
 // src/components/BookingSidebar.jsx
 import { useState } from 'react';
 import { FaChair, FaCalendarAlt, FaUser } from 'react-icons/fa';
+import { useSidebarStore } from '../lib/sidebarStore';
 
 const BookingSidebar = () => {
+  const { isSidebarOpen, closeSidebar } = useSidebarStore();
+
   const [activeTab, setActiveTab] = useState('seat');
   const [selectedSeat, setSelectedSeat] = useState(null);
   const today = new Date().toISOString().split('T')[0];
@@ -52,6 +55,13 @@ const BookingSidebar = () => {
 
   return (
     <div style={styles.container}>
+      {/* Header with Close Button */}
+      <div style={styles.header}>
+        <span style={styles.headerTitle}>Booking</span>
+        <button style={styles.closeButton} onClick={closeSidebar}>
+          ✖
+        </button>
+      </div>
       {/* Sidebar Header Tabs */}
       <div style={styles.tabs}>
         <button
