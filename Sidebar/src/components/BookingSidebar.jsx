@@ -188,7 +188,8 @@ export default function BookingSidebar()  {
             </form>
           </div>
         )}
-        {/* Sidebar Header Tabs */}
+      </div>
+      {/* Sidebar Header Tabs */}
       <div style={styles.tabs}>
         <button
           style={{
@@ -221,7 +222,6 @@ export default function BookingSidebar()  {
           <FaUser />
         </button>
       </div>
-      </div>
     </div>
   );
 };
@@ -245,9 +245,11 @@ const styles = {
     padding: '1rem',
     backgroundColor: '#343a40',
     justifyContent: 'space-around',
-    marginTop: 'auto' // Push to bottom of header
+    marginTop: 'auto', 
+    alignItems: 'center'
   },
   tabButton: {
+    flex: 1,
     background: 'none',
     border: 'none',
     fontSize: '1.5rem',

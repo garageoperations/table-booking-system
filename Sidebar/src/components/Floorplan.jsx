@@ -33,7 +33,10 @@ export default function Floorplan() {
               top: table.top + layout.table.top,
               left: table.left + layout.table.left,
             }}
-            onClick={() => {setSelectedTable(table.id.replace("-", " ")); openSidebar()}}
+            onClick={() => {
+              setSelectedTable(table.id.replace("-", " "));
+              setSelectedSeat("1-6");
+              openSidebar()}}
           >
             {table.id.replace("-", " ")}
           </button>
