@@ -6,4 +6,12 @@ export const useSidebarStore = create((set) => ({
   openSidebar: () => set({ isSidebarOpen: true }),
   closeSidebar: () => set({ isSidebarOpen: false }),
   toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
+
+  selectedTable: null,
+  setSelectedTable: (tableId) => set({ selectedTable: tableId }),
+  clearSelectedTable: () => set({ selectedTable: null }),
+
+  selectedSeat: null,
+  setSelectedSeat: (seat) => set({ selectedSeat: seat }),
+  clearSelectedSeat: () => set({ selectedSeat: null }),
 }));

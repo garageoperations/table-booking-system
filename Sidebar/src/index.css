@@ -55,24 +55,16 @@ button:focus-visible {
 }
 
     /* Container with floorplan */
-    .floorplan-container {
-      position: relative;
-      margin: 50px;
-      align-items: center;
-      justify-content: center;
-      display: inline-block;
-      background: #e0e0e0;
-      border-radius: 25px;
-      border: 2px solid #000000;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      overflow: hidden;
-    }
+.floorplan-container {
+  position: relative;
+  display: inline-block; /* shrink to image */
+  align-items: center;
+}
 
-    .floorplan-container img {
-      display: block;
-      max-width: 100%;
-      height: auto;
-    }
+.floorplan-container img {
+  display: block; /* removes bottom inline gap */
+}
+
 
     /* Table buttons */
     .table-btn {

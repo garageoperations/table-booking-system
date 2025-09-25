@@ -3,11 +3,11 @@ import { useState } from 'react';
 import { FaChair, FaCalendarAlt, FaUser } from 'react-icons/fa';
 import { useSidebarStore } from '../lib/sidebarStore';
 
-const BookingSidebar = () => {
+export default function BookingSidebar()  {
   const { isSidebarOpen, closeSidebar } = useSidebarStore();
+  const { selectedTable, selectedSeat } = useSidebarStore();
 
   const [activeTab, setActiveTab] = useState('seat');
-  const [selectedSeat, setSelectedSeat] = useState(null);
   const today = new Date().toISOString().split('T')[0];
   const [selectedDate, setSelectedDate] = useState(today);
   const [selectedTimes, setSelectedTimes] = useState([]); // Array for multiple selections
@@ -56,67 +56,19 @@ const BookingSidebar = () => {
   return (
     <div style={styles.container}>
       {/* Header with Close Button */}
-      <div style={styles.header}>
-        <span style={styles.headerTitle}>Booking</span>
-        <button style={styles.closeButton} onClick={closeSidebar}>
-          ✖
-        </button>
-      </div>
-      {/* Sidebar Header Tabs */}
-      <div style={styles.tabs}>
-        <button
-          style={{
-            ...styles.tabButton,
-            ...(activeTab === 'seat' ? styles.activeTab : {})
-          }}
-          onClick={() => setActiveTab('seat')}
-          title="Choose Seat"
-        >
-          <FaChair />
-        </button>
-        <button
-          style={{
-            ...styles.tabButton,
-            ...(activeTab === 'datetime' ? styles.activeTab : {})
-          }}
-          onClick={() => setActiveTab('datetime')}
-          title="Choose Date & Time"
-        >
-          <FaCalendarAlt />
-        </button>
-        <button
-          style={{
-            ...styles.tabButton,
-            ...(activeTab === 'info' ? styles.activeTab : {})
-          }}
-          onClick={() => setActiveTab('info')}
-          title="Enter Info"
-        >
-          <FaUser />
-        </button>
-      </div>
+    <div style={styles.header}>
+      <span style={styles.headerTitle}>Booking</span>
+      <button style={styles.closeButton} onClick={closeSidebar}>
+        ✖
+      </button>
+    </div>
 
       {/* Tab Content */}
       <div style={styles.content}>
         {activeTab === 'seat' && (
           <div>
-            <h3 style={styles.heading}>🪑 Choose Your Seat</h3>
-            <div style={styles.seatGrid}>
-              {Array.from({ length: 20 }, (_, i) => (
-                <button
-                  key={i + 1}
-                  style={{
-                    ...styles.seatButton,
-                    ...(selectedSeat === i + 1 ? styles.selectedSeat : {})
-                  }}
-                  onClick={() => setSelectedSeat(i + 1)}
-                >
-                  {i + 1}
-                </button>
-              ))}
-            </div>
-            {selectedSeat && (
-              <p style={styles.selectedText}>Selected Seat: {selectedSeat}</p>
+            {selectedSeat && selectedTable && (
+              <h3 style={styles.heading}>🪑 Seat {selectedSeat} at {selectedTable}</h3>
             )}
           </div>
         )}
@@ -236,6 +188,39 @@ const BookingSidebar = () => {
             </form>
           </div>
         )}
+        {/* Sidebar Header Tabs */}
+      <div style={styles.tabs}>
+        <button
+          style={{
+            ...styles.tabButton,
+            ...(activeTab === 'seat' ? styles.activeTab : {})
+          }}
+          onClick={() => setActiveTab('seat')}
+          title="Choose Seat"
+        >
+          <FaChair />
+        </button>
+        <button
+          style={{
+            ...styles.tabButton,
+            ...(activeTab === 'datetime' ? styles.activeTab : {})
+          }}
+          onClick={() => setActiveTab('datetime')}
+          title="Choose Date & Time"
+        >
+          <FaCalendarAlt />
+        </button>
+        <button
+          style={{
+            ...styles.tabButton,
+            ...(activeTab === 'info' ? styles.activeTab : {})
+          }}
+          onClick={() => setActiveTab('info')}
+          title="Enter Info"
+        >
+          <FaUser />
+        </button>
+      </div>
       </div>
     </div>
   );
@@ -259,7 +244,8 @@ const styles = {
     display: 'flex',
     padding: '1rem',
     backgroundColor: '#343a40',
-    justifyContent: 'space-around'
+    justifyContent: 'space-around',
+    marginTop: 'auto' // Push to bottom of header
   },
   tabButton: {
     background: 'none',
@@ -277,7 +263,9 @@ const styles = {
   content: {
     flex: 1,
     padding: '1.5rem',
-    overflowY: 'auto'
+    overflowY: 'auto',
+    display: 'flex',
+    flexDirection: 'column'
   },
   heading: {
     marginBottom: '1.5rem',
@@ -368,7 +356,28 @@ const styles = {
     fontSize: '1rem',
     cursor: 'pointer',
     marginTop: '1rem'
+  },
+   header: {
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    padding: '0.75rem 1rem',
+    borderBottom: '1px solid #dee2e6',
+    backgroundColor: '#343a40'
+  },
+  headerTitle: {
+    fontWeight: 'bold',
+    fontSize: '1rem',
+    flex: 1 // 👈 takes up all space so button gets pushed to the right
+  },
+  closeButton: {
+    position: 'absolute',
+    right: '1rem',  // 👈 stick to right
+    top: '50%',
+    transform: 'translateY(-50%)', // vertically center in header
+    background: 'none',
+    border: 'none',
+    fontSize: '1.2rem',
+    cursor: 'pointer'
   }
 };
-
-export default BookingSidebar;

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useSidebarStore } from "../lib/sidebarStore";
 
-const Floorplan = () => {
+export default function Floorplan() {
   const [tables, setTables] = useState([]);
   const [layout, setLayout] = useState(null);
-  const openSidebar = useSidebarStore((state) => state.openSidebar);
+  const { openSidebar, setSelectedTable, setSelectedSeat } = useSidebarStore();
 
   useEffect(() => {
     fetch("/positions.json")
@@ -33,7 +33,7 @@ const Floorplan = () => {
               top: table.top + layout.table.top,
               left: table.left + layout.table.left,
             }}
-            onClick={openSidebar}
+            onClick={() => {setSelectedTable(table.id.replace("-", " ")); openSidebar()}}
           >
             {table.id.replace("-", " ")}
           </button>
@@ -47,7 +47,12 @@ const Floorplan = () => {
                 top: table.top + layout.table.top + chair.top,
                 left: table.left + layout.table.left + chair.left,
               }}
-              onClick={openSidebar}
+              onClick={() => {
+                setSelectedSeat(i+1);
+                setSelectedTable(table.id.replace("-", " "));
+                openSidebar();
+              }}
+              
             >
               {i + 1}
             </button>
@@ -57,5 +62,3 @@ const Floorplan = () => {
     </div>
   );
 };
-
-export default Floorplan;
