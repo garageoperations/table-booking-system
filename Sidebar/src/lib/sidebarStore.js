@@ -14,4 +14,8 @@ export const useSidebarStore = create((set) => ({
   selectedSeat: null,
   setSelectedSeat: (seat) => set({ selectedSeat: seat }),
   clearSelectedSeat: () => set({ selectedSeat: null }),
+
+  bookingType: "", // "table" or "seat"
+  setBookingType: (type) => set({ bookingType: type }),
+  clearBookingType: () => set({ bookingType: "table" }),
 }));

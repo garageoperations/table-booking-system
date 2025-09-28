@@ -4,7 +4,7 @@ import { useSidebarStore } from "../lib/sidebarStore";
 export default function Floorplan() {
   const [tables, setTables] = useState([]);
   const [layout, setLayout] = useState(null);
-  const { openSidebar, setSelectedTable, setSelectedSeat } = useSidebarStore();
+  const { openSidebar, setSelectedTable, setSelectedSeat, setBookingType } = useSidebarStore();
 
   useEffect(() => {
     fetch("/positions.json")
@@ -36,6 +36,7 @@ export default function Floorplan() {
             onClick={() => {
               setSelectedTable(table.id.replace("-", " "));
               setSelectedSeat("1-6");
+              setBookingType("table");
               openSidebar()}}
           >
             {table.id.replace("-", " ")}
@@ -53,6 +54,7 @@ export default function Floorplan() {
               onClick={() => {
                 setSelectedSeat(i+1);
                 setSelectedTable(table.id.replace("-", " "));
+                setBookingType("seat");
                 openSidebar();
               }}
               

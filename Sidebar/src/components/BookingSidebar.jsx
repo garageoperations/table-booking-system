@@ -5,7 +5,7 @@ import { useSidebarStore } from '../lib/sidebarStore';
 
 export default function BookingSidebar()  {
   const { isSidebarOpen, closeSidebar } = useSidebarStore();
-  const { selectedTable, selectedSeat } = useSidebarStore();
+  const { selectedTable, selectedSeat, bookingType } = useSidebarStore();
 
   const [activeTab, setActiveTab] = useState('seat');
   const today = new Date().toISOString().split('T')[0];
@@ -14,7 +14,8 @@ export default function BookingSidebar()  {
   const [formData, setFormData] = useState({
     name: '',
     telegram: '',
-    email: ''
+    email: '',
+    reason: ''
   });
 
   // Generate 30-min time slots from 9AM to 9PM
@@ -52,6 +53,10 @@ export default function BookingSidebar()  {
   const handleTimeSelect = (time) => {
     setSelectedTime(selectedTime === time ? '' : time);
   };
+
+  const categories = bookingType === "table"
+  ? ["DIP", "FYP", "Flagship"]
+  : ["Individual"];
 
   return (
     <div style={styles.container}>
@@ -179,6 +184,28 @@ export default function BookingSidebar()  {
                     required
                     style={styles.input}
                   />
+                </label>
+              </div>
+
+              <div style={styles.formGroup}>
+                <label style={styles.label}>
+                  Reason for Booking:
+                  <select
+                    name="category"
+                    value={formData.categories}
+                    onChange={handleFormChange}
+                    required
+                    style={styles.input}
+                  >
+                    <option value="" disabled>
+                      -- choose an option --
+                    </option>
+                    {categories.map(cat => (
+                      <option key={cat} value={cat.toLowerCase()}>
+                        {cat}
+                      </option>
+                    ))}
+                    </select>
                 </label>
               </div>
 
