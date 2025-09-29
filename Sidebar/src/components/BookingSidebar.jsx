@@ -41,6 +41,7 @@ export default function BookingSidebar()  {
     e.preventDefault();
     alert(`Booking Confirmed!
     Seat: ${selectedSeat}
+    Table: ${selectedTable}
     Date: ${selectedDate || 'Any'}
     Times:
     ${selectedTimes.map(t => `  - ${t}`).join('\n')}
@@ -292,7 +293,7 @@ const styles = {
   content: {
     flex: 1,
     padding: '1.5rem',
-    overflowY: 'auto',
+    overflowY: 'hidden',
     display: 'flex',
     flexDirection: 'column'
   },
@@ -327,7 +328,8 @@ const styles = {
   label: {
     display: 'block',
     marginBottom: '0.5rem',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    color: '#333'
   },
   input: {
     width: '100%',
@@ -338,7 +340,8 @@ const styles = {
     marginTop: '0.25rem'
   },
   timeSlots: {
-    marginTop: '1rem'
+    marginTop: '1rem',
+    color: '#333'
   },
   timeGrid: {
     display: 'grid',
@@ -350,10 +353,10 @@ const styles = {
     padding: '0.5rem',
     border: '1px solid #ced4da',
     borderRadius: '4px',
-    background: '#fff',
+    background: '#1a1a1a',
     cursor: 'pointer',
     fontSize: '0.875rem',
-    textAlign: 'center'
+    textAlign: 'center',
   },
   selectedTime: {
     backgroundColor: '#007bff',
@@ -365,7 +368,8 @@ const styles = {
     padding: '0.75rem',
     backgroundColor: '#e9ecef',
     borderRadius: '4px',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    color: '#333'
   },
   form: {
     display: 'flex',
