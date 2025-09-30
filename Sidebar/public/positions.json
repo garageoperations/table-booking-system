@@ -1,0 +1,19 @@
+{
+  "layout": {
+    "table": { "top": 49, "left": 59 },
+    "chairs": [
+      { "top": 33, "left": -28 },
+      { "top": 6, "left": -28 },   
+      { "top": -27, "left": 3 },
+      { "top": -27, "left": 30 },
+      { "top": 6, "left": 61 },
+      { "top": 33, "left": 61 }
+    ]
+  },
+  "tables": [
+    { "id": "Table-1", "top": 0, "left": 0 },
+    { "id": "Table-2", "top": 0, "left": 129 },
+    { "id": "Table-3", "top": 102, "left": 0 },
+    { "id": "Table-4", "top": 102, "left": 129 }
+  ]
+}

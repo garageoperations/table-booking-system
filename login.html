@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Table Booking - Login</title>
+    <link rel="stylesheet" href="login.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <form class="login-box" action="login_process.php" method="POST">
+            <h2>Table Booking</h2>
+            <label for="email">Matric Number</label>
+            <input type="text" id="matric" name="matric" required>
+
+            <label for="password">Passcode</label>
+            <input type="password" id="password" name="password" required>
+
+            <button type="submit">Login</button>
+        </form>
+    </div>
+</body>
+</html>
