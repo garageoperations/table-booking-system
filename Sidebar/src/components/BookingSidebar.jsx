@@ -284,7 +284,8 @@ const styles = {
     color: '#adb5bd',
     cursor: 'pointer',
     padding: '0.5rem',
-    borderRadius: '5px'
+    borderRadius: '5px',
+    backgroundColor: '#343a40',
   },
   activeTab: {
     color: '#fff',
@@ -357,6 +358,7 @@ const styles = {
     cursor: 'pointer',
     fontSize: '0.875rem',
     textAlign: 'center',
+    color: '#fff'
   },
   selectedTime: {
     backgroundColor: '#007bff',
@@ -401,7 +403,8 @@ const styles = {
   headerTitle: {
     fontWeight: 'bold',
     fontSize: '1rem',
-    flex: 1 // 👈 takes up all space so button gets pushed to the right
+    flex: 1, // 👈 takes up all space so button gets pushed to the right
+    color: '#fff'
   },
   closeButton: {
     position: 'absolute',
