@@ -7,7 +7,7 @@ export default function BookingSidebar()  {
   const { isSidebarOpen, closeSidebar } = useSidebarStore();
   const { selectedTable, selectedSeat, bookingType } = useSidebarStore();
 
-  const [activeTab, setActiveTab] = useState('seat');
+  const [activeTab, setActiveTab] = useState('datetime');
   const today = new Date().toISOString().split('T')[0];
   const [selectedDate, setSelectedDate] = useState(today);
   const [selectedTimes, setSelectedTimes] = useState([]); // Array for multiple selections
@@ -71,28 +71,10 @@ export default function BookingSidebar()  {
 
       {/* Tab Content */}
       <div style={styles.content}>
-        {activeTab === 'seat' && (
-          <div>
-            {selectedSeat && selectedTable && (
-              <h3 style={styles.heading}>🪑 Seat {selectedSeat} at {selectedTable}</h3>
-            )}
-          </div>
-        )}
-
         {activeTab === 'datetime' && (
   <div>
-    <h3 style={styles.heading}>📅 Choose Date & Time</h3>
+    <h3 style={styles.heading}>📅 Choose A Timeslot</h3>
     <div style={styles.datetimeContainer}>
-      <label style={styles.label}>
-        Date (Optional):
-        <input
-          type="date"
-          value={selectedDate}
-          onChange={(e) => setSelectedDate(e.target.value)}
-          style={styles.input}
-        />
-      </label>
-
       <div style={styles.timeSlots}>
         <h4>Select Up to 5 Time Slots:</h4>
         <div style={styles.timeGrid}>
@@ -125,7 +107,25 @@ export default function BookingSidebar()  {
           })}
         </div>
       </div>
+      <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1rem" }}>
+        <button
+          style={{
+            padding: "0.5rem 1rem",
+            backgroundColor: selectedTimes.length === 0 ? "#ccc" : "#007bff",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+            cursor: selectedTimes.length === 0 ? "not-allowed" : "pointer",
+            opacity: selectedTimes.length === 0 ? 0.7 : 1
+          }}
+          disabled={selectedTimes.length === 0}
+          onClick={() => setActiveTab('info')}
+        >
+          Next →
+        </button>
+      </div>
     </div>
+    
 
     {/* Show selected times */}
     {selectedTimes.length > 0 && (
@@ -222,16 +222,6 @@ export default function BookingSidebar()  {
         <button
           style={{
             ...styles.tabButton,
-            ...(activeTab === 'seat' ? styles.activeTab : {})
-          }}
-          onClick={() => setActiveTab('seat')}
-          title="Choose Seat"
-        >
-          <FaChair />
-        </button>
-        <button
-          style={{
-            ...styles.tabButton,
             ...(activeTab === 'datetime' ? styles.activeTab : {})
           }}
           onClick={() => setActiveTab('datetime')}
@@ -242,9 +232,11 @@ export default function BookingSidebar()  {
         <button
           style={{
             ...styles.tabButton,
-            ...(activeTab === 'info' ? styles.activeTab : {})
+            ...(activeTab === 'info' ? styles.activeTab : {}),
+            cursor: selectedTimes.length === 0 ? "not-allowed" : "pointer"
           }}
           onClick={() => setActiveTab('info')}
+          disabled={selectedTimes.length === 0}
           title="Enter Info"
         >
           <FaUser />
