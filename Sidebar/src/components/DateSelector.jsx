@@ -18,9 +18,21 @@ const DateSelector = () => {
                 min={today}
                 value={selectedDate}
                 onChange={handleChange}
+                style={styles.input}
             />
         </div>
     );
 };
+
+const styles = {
+    input: {
+    width: '20%',
+    padding: '0.5rem',
+    border: '1px solid #ced4da',
+    borderRadius: '4px',
+    fontSize: '1rem',
+    marginTop: '0.25rem'
+  },
+}
 
 export default DateSelector;
