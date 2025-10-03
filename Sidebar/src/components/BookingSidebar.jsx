@@ -5,11 +5,11 @@ import { useSidebarStore } from '../lib/sidebarStore';
 
 export default function BookingSidebar()  {
   const { isSidebarOpen, closeSidebar } = useSidebarStore();
-  const { selectedTable, selectedSeat, bookingType } = useSidebarStore();
+  const { selectedTable, selectedSeat, bookingType,selectedDate } = useSidebarStore();
 
   const [activeTab, setActiveTab] = useState('seat');
   const today = new Date().toISOString().split('T')[0];
-  const [selectedDate, setSelectedDate] = useState(today);
+
   const [selectedTimes, setSelectedTimes] = useState([]); // Array for multiple selections
   const [formData, setFormData] = useState({
     name: '',
@@ -29,7 +29,19 @@ export default function BookingSidebar()  {
     }
     return slots;
   };
+  const formatDate = (dateString) => {
+  if (!dateString) return 'Any Date';
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return 'Invalid Date';
+  return date.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
 
+
+};
   const handleFormChange = (e) => {
     setFormData({
       ...formData,
@@ -37,14 +49,53 @@ export default function BookingSidebar()  {
     });
   };
 
+  // Convert array of consecutive time slots to "start - end" format
+const formatTimeRange = (times) => {
+  if (times.length === 0) return '';
+  if (times.length === 1) return `${times[0]} - ${add30Minutes(times[0])}`;
+  
+  const sorted = [...times].sort();
+  const startTime = sorted[0];
+  const endTime = add30Minutes(sorted[sorted.length - 1]);
+  return `${startTime} - ${endTime}`;
+};
+
+// Helper: Add 30 minutes to a time string "HH:MM"
+const add30Minutes = (timeStr) => {
+  const [hours, minutes] = timeStr.split(':').map(Number);
+  let totalMinutes = hours * 60 + minutes + 30;
+  
+  // Handle overflow (e.g., 23:30 + 30min = 00:00 next day)
+  if (totalMinutes >= 24 * 60) {
+    totalMinutes = 24 * 60 - 30; // Cap at 23:30 end time
+  }
+  
+  const newHours = Math.floor(totalMinutes / 60);
+  const newMinutes = totalMinutes % 60;
+  
+  return `${newHours.toString().padStart(2, '0')}:${newMinutes.toString().padStart(2, '0')}`;
+};
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    const formattedDate = selectedDate 
+    ? new Date(selectedDate).toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      })
+    : 'Any Date';
+
+    const timeRange = selectedTimes.length > 0 
+    ? formatTimeRange(selectedTimes) 
+    : 'Not selected';
+
     alert(`Booking Confirmed!
     Seat: ${selectedSeat}
     Table: ${selectedTable}
-    Date: ${selectedDate || 'Any'}
-    Times:
-    ${selectedTimes.map(t => `  - ${t}`).join('\n')}
+    Date: ${formattedDate}
+    Time: ${timeRange}
     Name: ${formData.name}
     Telegram: ${formData.telegram}
     Email: ${formData.email}`);
@@ -58,6 +109,22 @@ export default function BookingSidebar()  {
   const categories = bookingType === "table"
   ? ["DIP", "FYP", "Flagship"]
   : ["Individual"];
+
+  // Format date for display: "Friday, October 3, 2025"
+
+
+const areConsecutive = (times) => {
+  if (times.length <= 1) return true;
+  const sorted = [...times].sort();
+  for (let i = 1; i < sorted.length; i++) {
+    const [prevH, prevM] = sorted[i - 1].split(':').map(Number);
+    const [currH, currM] = sorted[i].split(':').map(Number);
+    if ((currH * 60 + currM) - (prevH * 60 + prevM) !== 30) {
+      return false;
+    }
+  }
+  return true;
+};
 
   return (
     <div style={styles.container}>
@@ -81,63 +148,53 @@ export default function BookingSidebar()  {
 
         {activeTab === 'datetime' && (
   <div>
-    <h3 style={styles.heading}>📅 Choose Date & Time</h3>
-    <div style={styles.datetimeContainer}>
-      <label style={styles.label}>
-        Date (Optional):
-        <input
-          type="date"
-          value={selectedDate}
-          onChange={(e) => setSelectedDate(e.target.value)}
-          style={styles.input}
-        />
-      </label>
-
-      <div style={styles.timeSlots}>
-        <h4>Select Up to 5 Time Slots:</h4>
-        <div style={styles.timeGrid}>
-          {generateTimeSlots().map(time => {
-            const isSelected = selectedTimes.includes(time);
-            return (
-              <button
-                key={time}
-                style={{
-                  ...styles.timeButton,
-                  ...(isSelected ? styles.selectedTime : {})
-                }}
-                onClick={() => {
-                  if (isSelected) {
-                    // Unselect
-                    setSelectedTimes(selectedTimes.filter(t => t !== time));
-                  } else {
-                    // Select only if under limit
-                    if (selectedTimes.length < 5) {
-                      setSelectedTimes([...selectedTimes, time]);
-                    } else {
-                      alert("You can select up to 5 time slots only.");
-                    }
-                  }
-                }}
-              >
-                {time}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-
-    {/* Show selected times */}
-    {selectedTimes.length > 0 && (
-      <div style={styles.selectedText}>
-        <strong>Selected Times:</strong>
-        <ul style={{ paddingLeft: '1.2rem', margin: '0.5rem 0' }}>
-          {selectedTimes.map((t, i) => (
-            <li key={i}>{selectedDate || 'Any Date'} at {t}</li>
-          ))}
-        </ul>
+    <h3 style={styles.heading}>📅 Choose Time</h3>
+    
+    {/* Display selected date from floorplan */}
+    {selectedDate && (
+      <div style={styles.selectedDateDisplay}>
+        <strong>Date:</strong> {formatDate(selectedDate)}
       </div>
     )}
+    
+    <div style={styles.timeSlots}>
+      <h4>Select up to 5 consecutive 30-min slots:</h4>
+      <div style={styles.timeGrid}>
+        {generateTimeSlots().map(time => {
+          const isSelected = selectedTimes.includes(time);
+          return (
+            <button
+              key={time}
+              style={{
+                ...styles.timeButton,
+                ...(isSelected ? styles.selectedTime : {})
+              }}
+              onClick={() => {
+                if (isSelected) {
+                  setSelectedTimes(selectedTimes.filter(t => t !== time));
+                } else {
+                  const newSelection = [...selectedTimes, time].sort();
+                  
+                  if (newSelection.length > 5) {
+                    alert("Maximum 5 time slots allowed.");
+                    return;
+                  }
+                  
+                  if (!areConsecutive(newSelection)) {
+                    alert("Slots must be consecutive 30-minute blocks.");
+                    return;
+                  }
+                  
+                  setSelectedTimes(newSelection);
+                }
+              }}
+            >
+              {time}
+            </button>
+          );
+        })}
+      </div>
+    </div>
   </div>
 )}
 
@@ -412,5 +469,13 @@ const styles = {
     border: 'none',
     fontSize: '1.2rem',
     cursor: 'pointer'
-  }
+  },
+  selectedDateDisplay: {
+  marginBottom: '1rem',
+  padding: '0.75rem',
+  borderRadius: '4px',
+  fontWeight: 'bold',
+  color: '#333',
+  fontSize: '0.95rem'
+}
 };
