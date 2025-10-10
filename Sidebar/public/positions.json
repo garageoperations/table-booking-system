@@ -11,9 +11,9 @@
     ]
   },
   "tables": [
-    { "id": "Table-1", "top": 0, "left": 0 },
-    { "id": "Table-2", "top": 0, "left": 129 },
-    { "id": "Table-3", "top": 102, "left": 0 },
-    { "id": "Table-4", "top": 102, "left": 129 }
+    { "id": "Table-1", "top": 90, "left": 176 },
+    { "id": "Table-2", "top": 90, "left": 305 },
+    { "id": "Table-3", "top": 193, "left": 176 },
+    { "id": "Table-4", "top": 193, "left": 305 }
   ]
 }

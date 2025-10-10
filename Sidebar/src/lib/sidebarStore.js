@@ -8,6 +8,9 @@ export const useSidebarStore = create((set) => ({
   closeSidebar: () => set({ isSidebarOpen: false }),
   toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
 
+  selectedDate: new Date().toISOString().split('T')[0],
+  setSelectedDate: (date) => set({ selectedDate: date }),
+
   selectedTable: null,
   setSelectedTable: (tableId) => set({ selectedTable: tableId }),
   clearSelectedTable: () => set({ selectedTable: null }),

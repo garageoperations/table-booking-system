@@ -2,6 +2,7 @@ import BookingSidebar from './components/BookingSidebar';
 import Floorplan from './components/Floorplan';
 import DateSelector from './components/DateSelector';
 import { useSidebarStore } from './lib/sidebarStore';
+import "react-datepicker/dist/react-datepicker.css";
 
 function App() {
 
