@@ -5,7 +5,7 @@ import { useSidebarStore } from '../lib/sidebarStore';
 
 export default function BookingSidebar()  {
   const { isSidebarOpen, closeSidebar } = useSidebarStore();
-  const { selectedTable, selectedSeat, bookingType, selectedDate } = useSidebarStore();
+  const { selectedItem, bookingType, selectedDate } = useSidebarStore();
 
   const [activeTab, setActiveTab] = useState('datetime');
   const [selectedTimes, setSelectedTimes] = useState([]);
@@ -68,7 +68,7 @@ export default function BookingSidebar()  {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!selectedTable || !selectedSeat) {
+    if (!selectedItem || !bookingType) {
       alert("❌ Please select a table and seat before submitting.");
       return;
     }
@@ -84,8 +84,8 @@ export default function BookingSidebar()  {
     const timeRange = formatTimeRange(selectedTimes);
 
     const data = {
-      table: selectedTable,
-      seat: selectedSeat,
+      type: bookingType,
+      item: selectedItem,
       date: formattedDate,
       time: timeRange,
       name: formData.name,
@@ -106,8 +106,8 @@ export default function BookingSidebar()  {
       }
 
       alert(`✅ Booking Submitted!
-Seat: ${selectedSeat}
-Table: ${selectedTable}
+Booking Type: ${bookingType}
+Item Booked: ${selectedItem}
 Date: ${formattedDate}
 Time: ${timeRange}
 Name: ${formData.name}
@@ -132,9 +132,33 @@ Email: ${formData.email}`);
       </div>
 
       <div style={styles.content}>
-        {activeTab==='seat' && selectedSeat && selectedTable && (
-          <h3 style={styles.heading}>🪑 Seat {selectedSeat} at {selectedTable}</h3>
-        )}
+        {activeTab === "seat" ? (
+          bookingType === "Chair" ? (
+            selectedItem ? (
+              <h3 style={styles.heading}>
+                🪑 {selectedItem}
+              </h3>
+            ) : (
+              <h3 style={styles.heading}>🪑 Please select a chair</h3>
+            )
+          ) : bookingType === "Table" ? (
+            selectedItem ? (
+              <h3 style={styles.heading}>
+                🍽️ {selectedItem}
+              </h3>
+            ) : (
+              <h3 style={styles.heading}>🍽️ Please select a table</h3>
+            )
+          ) : bookingType === "Room" ? (
+                selectedItem ? (
+                  <h3 style={styles.heading}>
+                    🏠 {selectedItem}
+                  </h3>
+                ) : (
+                  <h3 style={styles.heading}>🏠 Please select a room</h3>
+                )
+              ) : null
+        ) : null}
 
         {activeTab==='datetime' && (
           <div>
