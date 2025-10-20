@@ -5,7 +5,7 @@ import { useSidebarStore } from '../lib/sidebarStore';
 
 export default function BookingSidebar()  {
   const { isSidebarOpen, closeSidebar } = useSidebarStore();
-  const { selectedItem, bookingType, selectedDate } = useSidebarStore();
+  const { selectedSeat, selectedTable, bookingType, selectedDate } = useSidebarStore();
 
   const [activeTab, setActiveTab] = useState('datetime');
   const [selectedTimes, setSelectedTimes] = useState([]);
@@ -68,7 +68,7 @@ export default function BookingSidebar()  {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!selectedItem || !bookingType) {
+    if (!selectedSeat && !selectedTable) {
       alert("❌ Please select a table and seat before submitting.");
       return;
     }
@@ -84,8 +84,8 @@ export default function BookingSidebar()  {
     const timeRange = formatTimeRange(selectedTimes);
 
     const data = {
-      type: bookingType,
-      item: selectedItem,
+      table: selectedTable,
+      seat: selectedSeat,
       date: formattedDate,
       time: timeRange,
       name: formData.name,
@@ -106,13 +106,13 @@ export default function BookingSidebar()  {
       }
 
       alert(`✅ Booking Submitted!
-Booking Type: ${bookingType}
-Item Booked: ${selectedItem}
-Date: ${formattedDate}
-Time: ${timeRange}
-Name: ${formData.name}
-Telegram: ${formData.telegram}
-Email: ${formData.email}`);
+        Booking Type: ${bookingType}
+        Table: ${selectedTable}
+        Date: ${formattedDate}
+        Time: ${timeRange}
+        Name: ${formData.name}
+        Telegram: ${formData.telegram}
+        Email: ${formData.email}`);
 
       setFormData({ name:'', telegram:'', email:'', reason:'' });
       setSelectedTimes([]);
@@ -134,25 +134,25 @@ Email: ${formData.email}`);
       <div style={styles.content}>
         {activeTab === "seat" ? (
           bookingType === "Chair" ? (
-            selectedItem ? (
+            selectedSeat ? (
               <h3 style={styles.heading}>
-                🪑 {selectedItem}
+                🪑 {selectedSeat}
               </h3>
             ) : (
               <h3 style={styles.heading}>🪑 Please select a chair</h3>
             )
           ) : bookingType === "Table" ? (
-            selectedItem ? (
+            selectedTable ? (
               <h3 style={styles.heading}>
-                🍽️ {selectedItem}
+                🍽️ {selectedTable}
               </h3>
             ) : (
               <h3 style={styles.heading}>🍽️ Please select a table</h3>
             )
           ) : bookingType === "Room" ? (
-                selectedItem ? (
+                selectedTable ? (
                   <h3 style={styles.heading}>
-                    🏠 {selectedItem}
+                    🏠 {selectedTable}
                   </h3>
                 ) : (
                   <h3 style={styles.heading}>🏠 Please select a room</h3>

@@ -13,7 +13,7 @@ export default function Floorplan() {
   const [layout, setLayout] = useState(null);
   const [selectedDate, setSelectedDate] = useState(today); 
   const { setSelectedDate: setStoreDate } = useSidebarStore(); 
-  const { openSidebar, setSelectedItem, setBookingType } = useSidebarStore();
+  const { openSidebar, setSelectedTable, setSelectedSeat, setBookingType } = useSidebarStore();
   const handleDateChange = (date) => {
     setSelectedDate(date);
     // Convert Date object to YYYY-MM-DD string for consistency
@@ -33,6 +33,27 @@ export default function Floorplan() {
       })
       .catch(err => console.error("Error loading positions.json:", err));
   }, []);
+
+  useEffect(() => {
+    fetch("https://script.google.com/macros/s/AKfycbwyn9Jtjbkg5JR3nMplzb4WxZ9ktwdGSO3K-qxxwgi8YNFDadloD-n9xdBzb7BuiK8v/exec?action=read")
+    .then(res => res.json())
+    .then(data => {
+      // Calculate how many times each table was booked
+      const counts = {};
+      data.forEach(row => {
+        counts[row.Table] = (counts[row.Table] || 0) + 1;
+      });
+
+      // Example: assume 10 = max bookings
+      for (const tableId in counts) {
+        const occupancy = counts[tableId] / 10; // 0 to 1
+        const red = Math.round(255 * occupancy);
+        const green = Math.round(255 * (1 - occupancy));
+        const btn = document.getElementById(`table-${tableId}`);
+        btn.style.background = `linear-gradient(135deg, rgb(${red},${green},0), #fff)`;
+      }
+    });
+  }, [selectedDate])
 
   function getHeatmapColor(value) {
     if (value === 0) return "transparent"; // no color for empty
@@ -94,7 +115,7 @@ export default function Floorplan() {
               transition: "background 0.3s ease"
             }}
             onClick={() => {
-              setSelectedItem(table.id.replace("-", " "));
+              setSelectedTable(table.id.replace("-", " "));
               setBookingType("Table");
               openSidebar()}}
           >
@@ -114,7 +135,7 @@ export default function Floorplan() {
               transition: "background 0.3s ease"
             }}
             onClick={() => {
-              setSelectedItem(table.id.replace("-", " "));
+              setSelectedTable(table.id.replace("-", " "));
               setBookingType("Table");
               openSidebar()}}
           >
@@ -134,7 +155,7 @@ export default function Floorplan() {
               transition: "background 0.3s ease"
             }}
             onClick={() => {
-              setSelectedItem(room.id.replace("-", " "));
+              setSelectedTable(room.id.replace("-", " "));
               setBookingType("Room");
               openSidebar()}}
           >
@@ -156,7 +177,7 @@ export default function Floorplan() {
         }}
         onClick={() => {
           setBookingType("Chair");
-          setSelectedItem("Chair " + (i+1));
+          setSelectedSeat("Chair " + (i+1));
           openSidebar();
         }}
       >
