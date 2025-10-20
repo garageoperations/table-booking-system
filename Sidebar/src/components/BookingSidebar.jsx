@@ -86,6 +86,7 @@ export default function BookingSidebar()  {
     const data = {
       table: selectedTable,
       seat: selectedSeat,
+      iso: selectedDate,
       date: formattedDate,
       time: timeRange,
       name: formData.name,
@@ -95,7 +96,7 @@ export default function BookingSidebar()  {
     };
 
     try {
-      const scriptURL = "https://script.google.com/macros/s/AKfycbx378RhdgYTKZDWVkJxcQB8ekpIIh3p6hMD0ABSjLhVFikHIbxHUMPTSWh7RQu96dGO/exec";
+      const scriptURL = "https://script.google.com/macros/s/AKfycbxEcPiKJv92FFC5Lgy0tZvyB07pocu94G8xDbH7FnZnw54Ucg-MpiIrMd1SUliW2pVD/exec";
       const params = new URLSearchParams(data).toString();
       const response = await fetch(`${scriptURL}?${params}`, { method:'GET' });
       const result = await response.json();

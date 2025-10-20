@@ -11,14 +11,12 @@ export default function Floorplan() {
   const [chairs, setChairs] = useState([]);
   const [rooms, setRooms] = useState([]);
   const [layout, setLayout] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(today); 
-  const { setSelectedDate: setStoreDate } = useSidebarStore(); 
-  const { openSidebar, setSelectedTable, setSelectedSeat, setBookingType } = useSidebarStore();
+  const { openSidebar, setSelectedTable, setSelectedSeat, setBookingType, selectedDate, setSelectedDate } = useSidebarStore();
+
   const handleDateChange = (date) => {
-    setSelectedDate(date);
     // Convert Date object to YYYY-MM-DD string for consistency
     const dateString = date ? date.toISOString().split('T')[0] : '';
-    setStoreDate(dateString);
+    setSelectedDate(dateString);
   };
 
   useEffect(() => {
@@ -35,7 +33,7 @@ export default function Floorplan() {
   }, []);
 
   useEffect(() => {
-    fetch("https://script.google.com/macros/s/AKfycbwyn9Jtjbkg5JR3nMplzb4WxZ9ktwdGSO3K-qxxwgi8YNFDadloD-n9xdBzb7BuiK8v/exec?action=read")
+    fetch("https://script.google.com/macros/s/AKfycbxEcPiKJv92FFC5Lgy0tZvyB07pocu94G8xDbH7FnZnw54Ucg-MpiIrMd1SUliW2pVD/exec?action=read&date="+selectedDate)
     .then(res => res.json())
     .then(data => {
       // Calculate how many times each table was booked

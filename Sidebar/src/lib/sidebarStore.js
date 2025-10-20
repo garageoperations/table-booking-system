@@ -21,9 +21,5 @@ export const useSidebarStore = create((set) => ({
 
   bookingType: "", // "table" or "seat"
   setBookingType: (type) => set({ bookingType: type }),
-  clearBookingType: () => set({ bookingType: "table" }),
-
-  selectedDate: today,
-  setSelectedDate: (date) => set({ selectedDate: date }),
-  clearSelectedDate: () => set({ selectedDate: null }),
+  clearBookingType: () => set({ bookingType: "table" })
 }));
