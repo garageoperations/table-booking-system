@@ -12,12 +12,26 @@ export default function Floorplan() {
   const [rooms, setRooms] = useState([]);
   const [layout, setLayout] = useState(null);
   const { openSidebar, setSelectedTable, setSelectedSeat, setBookingType, selectedDate, setSelectedDate } = useSidebarStore();
+  const [tableWithBusyness, setTableWithBusyness] = useState([]);
+  const [wideTablesWithBusyness, setWideTablesWithBusyness] = useState([]);
+  const [roomsWithBusyness, setRoomsWithBusyness] = useState([]);
+
+  const bookables = [
+  ...tables,
+  ...wideTables,
+  ...rooms,
+  ...chairs
+];
 
   const handleDateChange = (date) => {
     // Convert Date object to YYYY-MM-DD string for consistency
     const dateString = date ? date.toISOString().split('T')[0] : '';
     setSelectedDate(dateString);
   };
+  function toDDMMYYYY(dateStr) {
+  const [yyyy, mm, dd] = dateStr.split('-');
+  return `${mm}/${dd}/${yyyy}`;
+}
 
   useEffect(() => {
     fetch("/positions.json")
@@ -33,25 +47,46 @@ export default function Floorplan() {
   }, []);
 
   useEffect(() => {
-    fetch("https://script.google.com/macros/s/AKfycbxEcPiKJv92FFC5Lgy0tZvyB07pocu94G8xDbH7FnZnw54Ucg-MpiIrMd1SUliW2pVD/exec?action=read&date="+selectedDate)
+    fetch("https://script.google.com/macros/s/AKfycby5ffgZAXyPyLzKTbjEsDoYZXUmP4rK5hTdh2CEDTc5Bnsr9kZGeGCz7ak90raKBCuP_A/exec?action=get&date="+toDDMMYYYY(selectedDate))
     .then(res => res.json())
     .then(data => {
-      // Calculate how many times each table was booked
+      const bookings = data.bookings || [];
+
+      // Count bookings per table
       const counts = {};
-      data.forEach(row => {
-        counts[row.Table] = (counts[row.Table] || 0) + 1;
+      bookings.forEach(row => {
+        counts[row.table] = (counts[row.table] || 0) + 1;
       });
 
-      // Example: assume 10 = max bookings
-      for (const tableId in counts) {
-        const occupancy = counts[tableId] / 10; // 0 to 1
-        const red = Math.round(255 * occupancy);
-        const green = Math.round(255 * (1 - occupancy));
-        const btn = document.getElementById(`table-${tableId}`);
-        btn.style.background = `linear-gradient(135deg, rgb(${red},${green},0), #fff)`;
-      }
-    });
-  }, [selectedDate])
+      const maxBookings = Math.max(1, ...Object.values(counts));
+
+      // Merge STATIC tables + dynamic busyness
+      const merged = bookables.map(item => {
+        const label = item.id.replace("-", " "); // Table-7 → Table 7
+        const count = counts[label] || 0;
+
+        return {
+          ...item,
+          busyness: Math.round((count / maxBookings) * 10)
+        };
+      });
+
+      const wideTableIds = ["Table-9", "Table-10", "Table-11"];
+
+      setTableWithBusyness(
+        merged.filter((i) => i.id.startsWith("Table-") && !wideTableIds.includes(i.id))
+      );
+
+      setWideTablesWithBusyness(
+        merged.filter((i) => wideTableIds.includes(i.id))
+      );
+
+      setRoomsWithBusyness(
+        merged.filter(i => i.id.startsWith("Room-"))
+      );
+    })
+    .catch(console.error);
+  }, [selectedDate, tables])
 
   function getHeatmapColor(value) {
     if (value === 0) return "transparent"; // no color for empty
@@ -62,19 +97,6 @@ export default function Floorplan() {
   }
 
   if (!layout) return <div>Loading floorplan...</div>;
-
-  const tablesWithBusyness = tables.map(table => ({
-    ...table,
-    busyness: Math.round((Math.random() * 10) + 1) // Either 0-10
-  }));
-  const wideTablesWithBusyness = wideTables.map(table => ({
-    ...table,
-    busyness: Math.round((Math.random() * 10) + 1)
-  }));
-  const roomWithBusyness = rooms.map(room => ({
-    ...room,
-    busyness: Math.round((Math.random() * 10) + 1)
-  }))
 
   return (
    <div className="date-picker-container mb-4 relative">
@@ -101,7 +123,7 @@ export default function Floorplan() {
       <img src="/floorplan_plain3.png" alt="Floorplan" className="floorplan-img" />
 
       {/* Tables */}
-      {tablesWithBusyness.map(table => (
+      {tableWithBusyness.map(table => (
         <div key={table.id} className="table-group" id={table.id}>
           {/* Table Button */}
           <button
@@ -114,6 +136,7 @@ export default function Floorplan() {
             }}
             onClick={() => {
               setSelectedTable(table.id.replace("-", " "));
+              setSelectedSeat(null); //TODO: Random seat allocation?
               setBookingType("Table");
               openSidebar()}}
           >
@@ -134,6 +157,7 @@ export default function Floorplan() {
             }}
             onClick={() => {
               setSelectedTable(table.id.replace("-", " "));
+              setSelectedSeat(null);
               setBookingType("Table");
               openSidebar()}}
           >
@@ -142,7 +166,7 @@ export default function Floorplan() {
         </div>
       ))}
       {/* Meeting Rooms */}
-      {roomWithBusyness.map(room => (
+      {roomsWithBusyness.map(room => (
         <div key={room.id} className="table-group" id={room.id}>
           <button
             className="room-btn absolute"
@@ -154,6 +178,7 @@ export default function Floorplan() {
             }}
             onClick={() => {
               setSelectedTable(room.id.replace("-", " "));
+              setSelectedSeat(null);
               setBookingType("Room");
               openSidebar()}}
           >
@@ -170,12 +195,13 @@ export default function Floorplan() {
         style={{
           top: chair.top + chairs[0].top,
           left: chair.left + chairs[0].left,
-          background: getHeatmapColor(Math.floor((Math.random() * 10) + 1)),
+          background: getHeatmapColor(chair.busyness),
           transition: "background 0.3s ease"
         }}
         onClick={() => {
           setBookingType("Chair");
           setSelectedSeat("Chair " + (i+1));
+          setSelectedTable(null);
           openSidebar();
         }}
       >

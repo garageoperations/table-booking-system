@@ -96,7 +96,7 @@ export default function BookingSidebar()  {
     };
 
     try {
-      const scriptURL = "https://script.google.com/macros/s/AKfycbxEcPiKJv92FFC5Lgy0tZvyB07pocu94G8xDbH7FnZnw54Ucg-MpiIrMd1SUliW2pVD/exec";
+      const scriptURL = "https://script.google.com/macros/s/AKfycbxgsRd5Q6eyHMtxdxydKj8c2vr_XFAgA3DVBEAM7KcJreSNptMDqYLmJG99_k7yUCo6/exec";
       const params = new URLSearchParams(data).toString();
       const response = await fetch(`${scriptURL}?${params}`, { method:'GET' });
       const result = await response.json();
