@@ -108,7 +108,6 @@ button:focus-visible {
       transition: background 0.2s, color 0.2s;
       border-color: #ffffff;
     }
-
     .room-btn {
       position: absolute;
       width: 87px;
@@ -134,7 +133,7 @@ button:focus-visible {
       background: #ffffff;
       border-radius: 30px;
       opacity: 0.6;
-      color: #000000;
+      color: #ffffff;
       font-size: 12px;
       cursor: pointer;
       text-align: center;
@@ -142,6 +141,7 @@ button:focus-visible {
       align-items: center;
       justify-content: center;
       transition: background 0.2s, color 0.2s;
+      border-color: #ffffff;
     }
 
     .table-btn:hover,

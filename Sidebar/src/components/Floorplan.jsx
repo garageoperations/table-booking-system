@@ -15,7 +15,7 @@ export default function Floorplan() {
   const [tableWithBusyness, setTableWithBusyness] = useState([]);
   const [wideTablesWithBusyness, setWideTablesWithBusyness] = useState([]);
   const [roomsWithBusyness, setRoomsWithBusyness] = useState([]);
-
+  const [chairsWithBusyness, setChairsWithBusyness] = useState([]);
   const bookables = [
   ...tables,
   ...wideTables,
@@ -53,21 +53,32 @@ export default function Floorplan() {
       const bookings = data.bookings || [];
 
       // Count bookings per table
-      const counts = {};
-      bookings.forEach(row => {
-        counts[row.table] = (counts[row.table] || 0) + 1;
+      const tableCounts = {};
+      bookings.forEach((row) => {
+        const tableLabel = row.table;
+        tableCounts[tableLabel] = (tableCounts[tableLabel] || 0) + 1;
       });
+      const maxTableBookings = Math.max(1, ...Object.values(tableCounts));
 
-      const maxBookings = Math.max(1, ...Object.values(counts));
+      // Count bookings per seat
+      const seatCounts = {};
+      bookings.forEach((row) => {
+        const seatLabel = row.seat;
+        if (seatLabel) seatCounts[seatLabel] = (seatCounts[seatLabel] || 0) + 1;
+      });
+      const maxSeatBookings = Math.max(1, ...Object.values(seatCounts));
 
       // Merge STATIC tables + dynamic busyness
       const merged = bookables.map(item => {
         const label = item.id.replace("-", " "); // Table-7 → Table 7
-        const count = counts[label] || 0;
 
         return {
           ...item,
-          busyness: Math.round((count / maxBookings) * 10)
+          busyness: Math.round(
+            (tableCounts[label] || seatCounts[label] || 0) /
+              Math.max(maxTableBookings, maxSeatBookings) *
+              10
+          ),
         };
       });
 
@@ -83,6 +94,10 @@ export default function Floorplan() {
 
       setRoomsWithBusyness(
         merged.filter(i => i.id.startsWith("Room-"))
+      );
+
+      setChairsWithBusyness(
+        merged.filter(i => i.id.startsWith("Chair-"))
       );
     })
     .catch(console.error);
@@ -188,13 +203,13 @@ export default function Floorplan() {
       ))}
       <div className="chair-group">
       {/* Single Chair Buttons */}
-      {layout.chairs.map((chair, i) => (
+      {chairsWithBusyness.map((chair, i) => (
       <button
         key={i}
         className="chair-btn"
         style={{
-          top: chair.top + chairs[0].top,
-          left: chair.left + chairs[0].left,
+          top: chair.top + layout.chair.top,
+          left: chair.left + layout.chair.left,
           background: getHeatmapColor(chair.busyness),
           transition: "background 0.3s ease"
         }}

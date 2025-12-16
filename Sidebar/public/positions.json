@@ -1,20 +1,7 @@
 {
   "layout": {
     "table": { "top": 91, "left": 57 },
-    "chairs": [
-          { "id": "Chair-1",  "top": 0,   "left": 0 },
-          { "id": "Chair-2",  "top": 30,  "left": 0 },
-          { "id": "Chair-3",  "top": 60,  "left": 0 },
-          { "id": "Chair-4",  "top": 90, "left": 0 },
-          { "id": "Chair-5",  "top": 121, "left": 0 },
-          { "id": "Chair-6",  "top": 152, "left": 0 },
-          { "id": "Chair-7",  "top": 184, "left": 0 },
-          { "id": "Chair-8",  "top": 216, "left": 0 },
-          { "id": "Chair-9",  "top": 248, "left": 0 },
-          { "id": "Chair-10", "top": 280, "left": 0 },
-          { "id": "Chair-11", "top": 304, "left": 34},
-          { "id": "Chair-11", "top": 304, "left": 64}
-        ]  
+    "chair" : { "id": "ChairGroup-LeftColumn", "top": 445, "left": 946 }
   },
   "tables": [
     { "id": "Table-1", "top": 120, "left": 420 },
@@ -31,9 +18,20 @@
     { "id": "Table-10", "top": 405, "left": 955 },
     { "id": "Table-11", "top": 530, "left": 955 }
   ],
-  "chairs" : [
-    { "id": "ChairGroup-LeftColumn", "top": 445, "left": 946 }
-  ],
+  "chairs": [
+    { "id": "Chair-1",  "top": 0,   "left": 0 },
+    { "id": "Chair-2",  "top": 30,  "left": 0 },
+    { "id": "Chair-3",  "top": 60,  "left": 0 },
+    { "id": "Chair-4",  "top": 90, "left": 0 },
+    { "id": "Chair-5",  "top": 121, "left": 0 },
+    { "id": "Chair-6",  "top": 152, "left": 0 },
+    { "id": "Chair-7",  "top": 184, "left": 0 },
+    { "id": "Chair-8",  "top": 216, "left": 0 },
+    { "id": "Chair-9",  "top": 248, "left": 0 },
+    { "id": "Chair-10", "top": 280, "left": 0 },
+    { "id": "Chair-11", "top": 304, "left": 34},
+    { "id": "Chair-11", "top": 304, "left": 64}
+  ],  
   "rooms" : [
     { "id": "Room-1", "top": 205, "left": 1265},
     { "id": "Room-2", "top": 205, "left": 1355}
