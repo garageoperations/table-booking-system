@@ -5,9 +5,9 @@ import { useSidebarStore } from '../lib/sidebarStore';
 
 export default function BookingSidebar()  {
   const { isSidebarOpen, closeSidebar } = useSidebarStore();
-  const { selectedTable, selectedSeat, bookingType, selectedDate } = useSidebarStore();
+  const { selectedSeat, selectedTable, bookingType, selectedDate } = useSidebarStore();
 
-  const [activeTab, setActiveTab] = useState('seat');
+  const [activeTab, setActiveTab] = useState('datetime');
   const [selectedTimes, setSelectedTimes] = useState([]);
   const [formData, setFormData] = useState({
     name: '',
@@ -68,7 +68,7 @@ export default function BookingSidebar()  {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!selectedTable || !selectedSeat) {
+    if (!selectedSeat && !selectedTable) {
       alert("❌ Please select a table and seat before submitting.");
       return;
     }
@@ -86,6 +86,7 @@ export default function BookingSidebar()  {
     const data = {
       table: selectedTable,
       seat: selectedSeat,
+      iso: selectedDate,
       date: formattedDate,
       time: timeRange,
       name: formData.name,
@@ -95,7 +96,7 @@ export default function BookingSidebar()  {
     };
 
     try {
-      const scriptURL = "https://script.google.com/macros/s/AKfycbx378RhdgYTKZDWVkJxcQB8ekpIIh3p6hMD0ABSjLhVFikHIbxHUMPTSWh7RQu96dGO/exec";
+      const scriptURL = "https://script.google.com/macros/s/AKfycbxgsRd5Q6eyHMtxdxydKj8c2vr_XFAgA3DVBEAM7KcJreSNptMDqYLmJG99_k7yUCo6/exec";
       const params = new URLSearchParams(data).toString();
       const response = await fetch(`${scriptURL}?${params}`, { method:'GET' });
       const result = await response.json();
@@ -106,13 +107,13 @@ export default function BookingSidebar()  {
       }
 
       alert(`✅ Booking Submitted!
-Seat: ${selectedSeat}
-Table: ${selectedTable}
-Date: ${formattedDate}
-Time: ${timeRange}
-Name: ${formData.name}
-Telegram: ${formData.telegram}
-Email: ${formData.email}`);
+        Booking Type: ${bookingType}
+        Table: ${selectedTable}
+        Date: ${formattedDate}
+        Time: ${timeRange}
+        Name: ${formData.name}
+        Telegram: ${formData.telegram}
+        Email: ${formData.email}`);
 
       setFormData({ name:'', telegram:'', email:'', reason:'' });
       setSelectedTimes([]);
@@ -132,9 +133,33 @@ Email: ${formData.email}`);
       </div>
 
       <div style={styles.content}>
-        {activeTab==='seat' && selectedSeat && selectedTable && (
-          <h3 style={styles.heading}>🪑 Seat {selectedSeat} at {selectedTable}</h3>
-        )}
+        {activeTab === "seat" ? (
+          bookingType === "Chair" ? (
+            selectedSeat ? (
+              <h3 style={styles.heading}>
+                🪑 {selectedSeat}
+              </h3>
+            ) : (
+              <h3 style={styles.heading}>🪑 Please select a chair</h3>
+            )
+          ) : bookingType === "Table" ? (
+            selectedTable ? (
+              <h3 style={styles.heading}>
+                🍽️ {selectedTable}
+              </h3>
+            ) : (
+              <h3 style={styles.heading}>🍽️ Please select a table</h3>
+            )
+          ) : bookingType === "Room" ? (
+                selectedTable ? (
+                  <h3 style={styles.heading}>
+                    🏠 {selectedTable}
+                  </h3>
+                ) : (
+                  <h3 style={styles.heading}>🏠 Please select a room</h3>
+                )
+              ) : null
+        ) : null}
 
         {activeTab==='datetime' && (
           <div>
@@ -235,7 +260,8 @@ const styles = {
     color: '#adb5bd',
     cursor: 'pointer',
     padding: '0.5rem',
-    borderRadius: '5px'
+    borderRadius: '5px',
+    backgroundColor: '#343a40',
   },
   activeTab: {
     color: '#fff',
@@ -308,6 +334,7 @@ const styles = {
     cursor: 'pointer',
     fontSize: '0.875rem',
     textAlign: 'center',
+    color: '#fff'
   },
   selectedTime: {
     backgroundColor: '#007bff',
@@ -352,7 +379,8 @@ const styles = {
   headerTitle: {
     fontWeight: 'bold',
     fontSize: '1rem',
-    flex: 1 // 👈 takes up all space so button gets pushed to the right
+    flex: 1, // 👈 takes up all space so button gets pushed to the right
+    color: '#fff'
   },
   closeButton: {
     position: 'absolute',

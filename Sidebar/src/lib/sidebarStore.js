@@ -1,5 +1,6 @@
 import { create } from "zustand";
 
+const today = new Date().toISOString().split('T')[0];
 
 export const useSidebarStore = create((set) => ({
   isSidebarOpen: false,
@@ -20,5 +21,5 @@ export const useSidebarStore = create((set) => ({
 
   bookingType: "", // "table" or "seat"
   setBookingType: (type) => set({ bookingType: type }),
-  clearBookingType: () => set({ bookingType: "table" }),
+  clearBookingType: () => set({ bookingType: "table" })
 }));
