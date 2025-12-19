@@ -194,34 +194,6 @@ export default function BookingSidebar()  {
       </div>
 
       <div style={styles.content}>
-        {activeTab === "seat" ? (
-          bookingType === "Chair" ? (
-            selectedSeat ? (
-              <h3 style={styles.heading}>
-                🪑 {selectedSeat}
-              </h3>
-            ) : (
-              <h3 style={styles.heading}>🪑 Please select a chair</h3>
-            )
-          ) : bookingType === "Table" ? (
-            selectedTable ? (
-              <h3 style={styles.heading}>
-                🍽️ {selectedTable}
-              </h3>
-            ) : (
-              <h3 style={styles.heading}>🍽️ Please select a table</h3>
-            )
-          ) : bookingType === "Room" ? (
-                selectedTable ? (
-                  <h3 style={styles.heading}>
-                    🏠 {selectedTable}
-                  </h3>
-                ) : (
-                  <h3 style={styles.heading}>🏠 Please select a room</h3>
-                )
-              ) : null
-        ) : null}
-
         {activeTab==='datetime' && (
           <div>
             <h3 style={styles.heading}>📅 Choose Time</h3>
