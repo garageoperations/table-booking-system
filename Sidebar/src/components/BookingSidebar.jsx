@@ -1,20 +1,23 @@
 // src/components/BookingSidebar.jsx
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { FaChair, FaCalendarAlt, FaUser } from 'react-icons/fa';
 import { useSidebarStore } from '../lib/sidebarStore';
 
 export default function BookingSidebar()  {
   const { isSidebarOpen, closeSidebar } = useSidebarStore();
-  const { selectedSeat, selectedTable, bookingType, selectedDate } = useSidebarStore();
+  const { selectedSeat, selectedTable, bookingType, selectedDate, bookings, selectedTimes, setSelectedTimes, refreshKey, setRefreshKey } = useSidebarStore();
 
   const [activeTab, setActiveTab] = useState('datetime');
-  const [selectedTimes, setSelectedTimes] = useState([]);
   const [formData, setFormData] = useState({
     name: '',
     telegram: '',
     email: '',
     reason: ''
   });
+
+  useEffect(() => {
+    setActiveTab('datetime');
+  }, [selectedTimes])
 
   const generateTimeSlots = () => {
     const slots = [];
@@ -32,6 +35,14 @@ export default function BookingSidebar()  {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return 'Invalid Date';
     return date.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  };
+
+  const toDDMMYYYY = (date) => {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
+    const year = d.getFullYear();
+    return `${day}${month}${year}`;
   };
 
   const handleFormChange = (e) => {
@@ -65,6 +76,55 @@ export default function BookingSidebar()  {
     return true;
   };
 
+  const expandTimeRange = (range) => {
+    const [start, end] = range.split(" - ");
+
+    let [h, m] = start.split(":").map(Number);
+    const [endH, endM] = end.split(":").map(Number);
+
+    const slots = [];
+
+    while (h < endH || (h === endH && m < endM)) {
+      slots.push(
+        `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`
+      );
+
+      m += 30;
+      if (m === 60) {
+        m = 0;
+        h++;
+      }
+    }
+
+    return slots;
+  };
+
+  const bookedSlots = useMemo(() => {
+    if (!selectedDate || (!selectedSeat && !selectedTable)) return new Set();
+
+    const selectedItemId = selectedSeat || selectedTable;
+
+    const targetLabel = selectedItemId.replace("-", " "); 
+    // Table-7 → Table 7, Chair-1 → Chair 1
+
+    const set = new Set();
+
+    bookings.forEach(b => {
+      const sameDate =
+        toDDMMYYYY(b.date) === toDDMMYYYY(selectedDate);
+
+      const sameResource =
+        b.table === targetLabel ||
+        (b.seat && b.seat !== "null" && b.seat === targetLabel);
+
+      if (sameDate && sameResource) {
+        expandTimeRange(b.time).forEach(t => set.add(t));
+      }
+    });
+
+    return set;
+  }, [bookings, selectedDate, selectedTable, selectedSeat]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -96,7 +156,7 @@ export default function BookingSidebar()  {
     };
 
     try {
-      const scriptURL = "https://script.google.com/macros/s/AKfycbxgsRd5Q6eyHMtxdxydKj8c2vr_XFAgA3DVBEAM7KcJreSNptMDqYLmJG99_k7yUCo6/exec";
+      const scriptURL = "https://script.google.com/macros/s/AKfycby5ffgZAXyPyLzKTbjEsDoYZXUmP4rK5hTdh2CEDTc5Bnsr9kZGeGCz7ak90raKBCuP_A/exec";
       const params = new URLSearchParams(data).toString();
       const response = await fetch(`${scriptURL}?${params}`, { method:'GET' });
       const result = await response.json();
@@ -117,6 +177,7 @@ export default function BookingSidebar()  {
 
       setFormData({ name:'', telegram:'', email:'', reason:'' });
       setSelectedTimes([]);
+      setRefreshKey(prev => prev + 1);
     } catch (error) {
       console.error("Error submitting booking:", error);
       alert("❌ Failed to submit booking: " + error.message);
@@ -170,9 +231,18 @@ export default function BookingSidebar()  {
               <div style={styles.timeGrid}>
                 {generateTimeSlots().map(time => {
                   const isSelected = selectedTimes.includes(time);
+                  const isBooked = bookedSlots.has(time);
                   return (
-                    <button key={time} style={{...styles.timeButton, ...(isSelected?styles.selectedTime:{})}}
+                    <button 
+                    key={time} 
+                    disabled={isBooked}
+                    style={{
+                      ...styles.timeButton,
+                      ...(isSelected?styles.selectedTime:{}),
+                      ...(isBooked?styles.disabledTime:{})
+                    }}
                       onClick={() => {
+                        if (isBooked) return;
                         if (isSelected) setSelectedTimes(selectedTimes.filter(t=>t!==time));
                         else {
                           const newSel = [...selectedTimes,time].sort();
@@ -340,6 +410,12 @@ const styles = {
     backgroundColor: '#007bff',
     color: '#fff',
     border: '1px solid #007bff'
+  },
+  disabledTime: {
+  backgroundColor: "#eee",
+  color: "#999",
+  cursor: "not-allowed",
+  textDecoration: "line-through"
   },
   selectedText: {
     marginTop: '1rem',

@@ -11,7 +11,7 @@ export default function Floorplan() {
   const [chairs, setChairs] = useState([]);
   const [rooms, setRooms] = useState([]);
   const [layout, setLayout] = useState(null);
-  const { openSidebar, setSelectedTable, setSelectedSeat, setBookingType, selectedDate, setSelectedDate } = useSidebarStore();
+  const { openSidebar, setSelectedTable, setSelectedSeat, setBookingType, selectedDate, setSelectedDate, setBookings, clearSelectedTimes, refreshKey, setLoadingBookings } = useSidebarStore();
   const [tableWithBusyness, setTableWithBusyness] = useState([]);
   const [wideTablesWithBusyness, setWideTablesWithBusyness] = useState([]);
   const [roomsWithBusyness, setRoomsWithBusyness] = useState([]);
@@ -23,15 +23,41 @@ export default function Floorplan() {
   ...chairs
 ];
 
-  const handleDateChange = (date) => {
+  const expandTimeRange = (range) => {
+    const [start, end] = range.split(" - ");
+
+    let [h, m] = start.split(":").map(Number);
+    const [endH, endM] = end.split(":").map(Number);
+
+    const slots = [];
+
+    while (h < endH || (h === endH && m < endM)) {
+      slots.push(
+        `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`
+      );
+
+      m += 30;
+      if (m === 60) {
+        m = 0;
+        h++;
+      }
+    }
+
+    return slots;
+  };
+
+const handleDateChange = (date) => {
     // Convert Date object to YYYY-MM-DD string for consistency
     const dateString = date ? date.toISOString().split('T')[0] : '';
     setSelectedDate(dateString);
+    clearSelectedTimes();
   };
-  function toDDMMYYYY(dateStr) {
+function toDDMMYYYY(dateStr) {
   const [yyyy, mm, dd] = dateStr.split('-');
   return `${mm}/${dd}/${yyyy}`;
 }
+const normalize = s =>
+  s?.toLowerCase().replace(/[-\s]/g, "");
 
   useEffect(() => {
     fetch("/positions.json")
@@ -47,38 +73,35 @@ export default function Floorplan() {
   }, []);
 
   useEffect(() => {
+    setLoadingBookings(true);
     fetch("https://script.google.com/macros/s/AKfycby5ffgZAXyPyLzKTbjEsDoYZXUmP4rK5hTdh2CEDTc5Bnsr9kZGeGCz7ak90raKBCuP_A/exec?action=get&date="+toDDMMYYYY(selectedDate))
     .then(res => res.json())
     .then(data => {
-      const bookings = data.bookings || [];
+      const fetchedBookings = data.bookings || [];
+      setBookings(fetchedBookings)
 
-      // Count bookings per table
+            // Count booked timeslots per table
       const tableCounts = {};
-      bookings.forEach((row) => {
-        const tableLabel = row.table;
-        tableCounts[tableLabel] = (tableCounts[tableLabel] || 0) + 1;
-      });
-      const maxTableBookings = Math.max(1, ...Object.values(tableCounts));
-
-      // Count bookings per seat
       const seatCounts = {};
-      bookings.forEach((row) => {
-        const seatLabel = row.seat;
-        if (seatLabel) seatCounts[seatLabel] = (seatCounts[seatLabel] || 0) + 1;
+
+      fetchedBookings.forEach((row) => {
+        const tableLabel = normalize(row.table);
+        const seatLabel = row.seat && row.seat !== "null" ? normalize(row.seat) : null;
+
+        const slots = expandTimeRange(row.time); // array of 30-min slots
+
+        tableCounts[tableLabel] = (tableCounts[tableLabel] || 0) + slots.length;
+        if (seatLabel) seatCounts[seatLabel] = (seatCounts[seatLabel] || 0) + slots.length;
       });
-      const maxSeatBookings = Math.max(1, ...Object.values(seatCounts));
 
       // Merge STATIC tables + dynamic busyness
-      const merged = bookables.map(item => {
-        const label = item.id.replace("-", " "); // Table-7 → Table 7
+      const merged = bookables.map((item) => {
+        const label = normalize(item.id.replace("-", " ")); // Table-7 → Table 7
+        const bookedSlots = tableCounts[label] || seatCounts[label] || 0;
 
         return {
           ...item,
-          busyness: Math.round(
-            (tableCounts[label] || seatCounts[label] || 0) /
-              Math.max(maxTableBookings, maxSeatBookings) *
-              10
-          ),
+          busyness: bookedSlots, // directly number of slots booked
         };
       });
 
@@ -92,20 +115,17 @@ export default function Floorplan() {
         merged.filter((i) => wideTableIds.includes(i.id))
       );
 
-      setRoomsWithBusyness(
-        merged.filter(i => i.id.startsWith("Room-"))
-      );
-
-      setChairsWithBusyness(
-        merged.filter(i => i.id.startsWith("Chair-"))
-      );
+      setRoomsWithBusyness(merged.filter((i) => i.id.startsWith("Room-")));
+      setChairsWithBusyness(merged.filter((i) => i.id.startsWith("Chair-")));
     })
-    .catch(console.error);
-  }, [selectedDate, tables])
+    .catch(console.error)
+    .finally(() => setLoadingBookings(false));
+
+  }, [selectedDate, tables, wideTables, chairs, rooms, refreshKey])
 
   function getHeatmapColor(value) {
-    if (value === 0) return "transparent"; // no color for empty
-    const percent = value / 10; // scale 0–10 → 0–1
+    if (value === 0) return "rgb(0 0 0 / 58%)"; // no color for empty
+    const percent = value / 24; // scale 0-24 → 0–1
     // light pink → deep red
     const lightness = 90 - percent * 50; 
     return `hsl(0, 100%, ${lightness}%)`;
@@ -114,8 +134,8 @@ export default function Floorplan() {
   if (!layout) return <div>Loading floorplan...</div>;
 
   return (
-   <div className="date-picker-container mb-4 relative">
-  <label className="block text-sm font-medium text-gray-700 mb-1">
+    <div className="date-picker-container mb-4 relative">
+    <label className="block text-sm font-medium text-gray-700 mb-1">
 
     {/* Select date */}
     Select Date:
@@ -153,6 +173,7 @@ export default function Floorplan() {
               setSelectedTable(table.id.replace("-", " "));
               setSelectedSeat(null); //TODO: Random seat allocation?
               setBookingType("Table");
+              clearSelectedTimes();
               openSidebar()}}
           >
             {table.id.replace("-", " ")}
@@ -174,6 +195,7 @@ export default function Floorplan() {
               setSelectedTable(table.id.replace("-", " "));
               setSelectedSeat(null);
               setBookingType("Table");
+              clearSelectedTimes();
               openSidebar()}}
           >
             {table.id.replace("-", " ")}
@@ -195,6 +217,7 @@ export default function Floorplan() {
               setSelectedTable(room.id.replace("-", " "));
               setSelectedSeat(null);
               setBookingType("Room");
+              clearSelectedTimes();
               openSidebar()}}
           >
             {room.id.replace("-", " ")}
@@ -217,6 +240,7 @@ export default function Floorplan() {
           setBookingType("Chair");
           setSelectedSeat("Chair " + (i+1));
           setSelectedTable(null);
+          clearSelectedTimes();
           openSidebar();
         }}
       >
