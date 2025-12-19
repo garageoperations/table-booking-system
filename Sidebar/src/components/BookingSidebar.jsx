@@ -264,7 +264,6 @@ export default function BookingSidebar()  {
       </div>
 
       <div style={styles.tabs}>
-        <button style={{...styles.tabButton, ...(activeTab==='seat'?styles.activeTab:{})}} onClick={()=>setActiveTab('seat')} title="Choose Seat"><FaChair/></button>
         <button style={{...styles.tabButton, ...(activeTab==='datetime'?styles.activeTab:{})}} onClick={()=>setActiveTab('datetime')} title="Choose Date & Time"><FaCalendarAlt/></button>
         <button style={{...styles.tabButton, ...(activeTab==='info'?styles.activeTab:{})}} onClick={()=>setActiveTab('info')} title="Enter Info"><FaUser/></button>
       </div>
