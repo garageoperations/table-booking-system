@@ -227,3 +227,24 @@ button:focus-visible {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+.bubble {
+  background: white;
+  padding: 10px;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  text-align: center;
+}
+
+.bubble img {
+  width: 160px;
+  border-radius: 10px;
+  display: block;
+}
+
+.bubble-label {
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: black;
+}

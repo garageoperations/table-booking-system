@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import DatePicker from "react-datepicker"; 
 import "react-datepicker/dist/react-datepicker.css"; 
 import { useSidebarStore } from "../lib/sidebarStore";
@@ -11,17 +11,44 @@ export default function Floorplan() {
   const [chairs, setChairs] = useState([]);
   const [rooms, setRooms] = useState([]);
   const [layout, setLayout] = useState(null);
-  const { openSidebar, setSelectedTable, setSelectedSeat, setBookingType, selectedDate, setSelectedDate, setBookings, clearSelectedTimes, refreshKey, setLoadingBookings } = useSidebarStore();
+  const { openSidebar, setSelectedTable, setSelectedSeat, setBookingType, selectedDate, setSelectedDate, 
+    setBookings, clearSelectedTimes, refreshKey, setLoadingBookings } = useSidebarStore();
   const [tableWithBusyness, setTableWithBusyness] = useState([]);
   const [wideTablesWithBusyness, setWideTablesWithBusyness] = useState([]);
   const [roomsWithBusyness, setRoomsWithBusyness] = useState([]);
   const [chairsWithBusyness, setChairsWithBusyness] = useState([]);
+  const [hoverInfo, setHoverInfo] = useState(null);
+  const [mousePos, setMousePos] = useState({ x:0, y:0 });
+  const imgRef = useRef(null);
+  const [scale, setScale] = useState({ x:1, y:1 });
   const bookables = [
   ...tables,
   ...wideTables,
   ...rooms,
   ...chairs
 ];
+
+const baseWidth = 1080;
+const baseHeight = 629;
+
+useEffect(() => {
+  if (!imgRef.current) return;
+
+  const updateScale = () => {
+    const rect = imgRef.current.getBoundingClientRect();
+
+    setScale({
+      x: rect.width / baseWidth,
+      y: rect.height / baseHeight
+    });
+  };
+
+  updateScale(); // initial
+  window.addEventListener("resize", updateScale);
+
+  return () => window.removeEventListener("resize", updateScale);
+}, []);
+
 
   const expandTimeRange = (range) => {
     const [start, end] = range.split(" - ");
@@ -131,29 +158,69 @@ const normalize = s =>
     return `hsl(0, 100%, ${lightness}%)`;
   }
 
+  function HoverBubbleContent({ hoverInfo }) {
+    const { type, data } = hoverInfo;
+
+    let imageSrc = "";
+    let label = "";
+
+    switch (type) {
+      case "table":
+        imageSrc = "/small_table.jpg";
+        label = data.id.replace("-", " ");
+        break;
+
+      case "wideTable":
+        imageSrc = "/long_table.jpg";
+        label = data.id.replace("-", " ");
+        break;
+
+      case "room":
+        imageSrc = "/room.jpg";
+        label = data.id.replace("-", " ");
+        break;
+      
+      case "chair":
+        imageSrc = "/chairs.jpg";
+        label = data.id.replace("-", " ");
+        break;
+
+      default:
+        return null;
+    }
+
+    return (
+      <div className="bubble">
+        <img src={imageSrc} alt={label} />
+        <div className="bubble-label">{label}</div>
+      </div>
+    );
+  }
+
+
   if (!layout) return <div>Loading floorplan...</div>;
 
   return (
-    <div className="date-picker-container mb-4 relative">
+  <div className="date-picker-container mb-4 relative">
     <label className="block text-sm font-medium text-gray-700 mb-1">
 
     {/* Select date */}
     Select Date:
-  </label>
-  <div className="relative">
-    <DatePicker
-      selected={selectedDate}
-      onChange={handleDateChange}
-      minDate={today}
-      dateFormat="EEEE, MMMM d, yyyy" // 👈 More reliable format
-      className="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-      popperClassName="z-50"
-      popperPlacement="bottom-start"
-      placeholderText="Select a date"
-    />
-  </div>
+    </label>
+    <div className="relative">
+      <DatePicker
+        selected={selectedDate}
+        onChange={handleDateChange}
+        minDate={today}
+        dateFormat="EEEE, MMMM d, yyyy" // 👈 More reliable format
+        className="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+        popperClassName="z-50"
+        popperPlacement="bottom-start"
+        placeholderText="Select a date"
+      />
+    </div>
 
-
+    <div className="floorplan-wrapper" style={{position: "relative"}}>
       {/* Floorplan image */}
       <img src="/floorplan_plain3.png" alt="Floorplan" className="floorplan-img" />
 
@@ -164,11 +231,19 @@ const normalize = s =>
           <button
             className="table-btn absolute"
             style={{
-              top: table.top + layout.table.top,
-              left: table.left + layout.table.left,
+              top: table.top,
+              left: table.left,
               background: getHeatmapColor(table.busyness),  // 🔥 heatmap
               transition: "background 0.3s ease"
             }}
+            onMouseEnter={(e) => {
+              setHoverInfo({ type: "table", data: table });
+              setMousePos({ x: e.clientX, y: e.clientY });
+            }}
+            onMouseMove={(e) => {
+              setMousePos({ x: e.clientX, y: e.clientY });
+            }}
+            onMouseLeave={() => setHoverInfo(null)}
             onClick={() => {
               setSelectedTable(table.id.replace("-", " "));
               setSelectedSeat(null); //TODO: Random seat allocation?
@@ -191,6 +266,14 @@ const normalize = s =>
               background: getHeatmapColor(table.busyness),  // 🔥 heatmap
               transition: "background 0.3s ease"
             }}
+            onMouseEnter={(e) => {
+              setHoverInfo({ type: "wideTable", data: table });
+              setMousePos({ x: e.clientX, y: e.clientY });
+            }}
+            onMouseMove={(e) => {
+              setMousePos({ x: e.clientX, y: e.clientY });
+            }}
+            onMouseLeave={() => setHoverInfo(null)}
             onClick={() => {
               setSelectedTable(table.id.replace("-", " "));
               setSelectedSeat(null);
@@ -213,6 +296,14 @@ const normalize = s =>
               background: getHeatmapColor(room.busyness),  // 🔥 heatmap
               transition: "background 0.3s ease"
             }}
+            onMouseEnter={(e) => {
+              setHoverInfo({ type: "room", data: room });
+              setMousePos({ x: e.clientX, y: e.clientY });
+            }}
+            onMouseMove={(e) => {
+              setMousePos({ x: e.clientX, y: e.clientY });
+            }}
+            onMouseLeave={() => setHoverInfo(null)}
             onClick={() => {
               setSelectedTable(room.id.replace("-", " "));
               setSelectedSeat(null);
@@ -236,6 +327,14 @@ const normalize = s =>
           background: getHeatmapColor(chair.busyness),
           transition: "background 0.3s ease"
         }}
+        onMouseEnter={(e) => {
+              setHoverInfo({ type: "chair", data: chair });
+              setMousePos({ x: e.clientX, y: e.clientY });
+            }}
+            onMouseMove={(e) => {
+              setMousePos({ x: e.clientX, y: e.clientY });
+            }}
+            onMouseLeave={() => setHoverInfo(null)}
         onClick={() => {
           setBookingType("Chair");
           setSelectedSeat("Chair " + (i+1));
@@ -246,6 +345,24 @@ const normalize = s =>
       >
               </button>
     ))}
+    {hoverInfo && (
+      <div
+        style={{
+          position: "fixed",
+          top: mousePos.y + 16,
+          left: mousePos.x + 16,
+          transform: "scale(1)",
+          opacity: 1,
+          transition:
+            "transform 180ms cubic-bezier(.34,1.56,.64,1), opacity 120ms ease",
+          pointerEvents: "none",
+          zIndex: 9999
+        }}
+      >
+        <HoverBubbleContent hoverInfo={hoverInfo} />
+      </div>
+    )}
+    </div>
     </div>
     </div>
   );
