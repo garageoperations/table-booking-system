@@ -106,9 +106,10 @@ export default function AdminPanel() {
       </div>
 
       {loading ? <p>Loading...</p> : (
+        <div style={styles.tableWrapper}>
         <table style={styles.adminTable}>
           <thead>
-            <tr style={{ backgroundColor: '#f4f4f4' }}>
+            <tr>
               <th style={styles.th}>Date</th><th style={styles.th}>Time</th><th style={styles.th}>Table</th><th style={styles.th}>Seat</th><th style={styles.th}>Name</th><th style={styles.th}>Actions</th>
             </tr>
           </thead>
@@ -134,17 +135,19 @@ export default function AdminPanel() {
             })}
           </tbody>
         </table>
+        </div>
       )}
     </div>
   );
 }
 
 const styles = {
-  adminContainer: { padding: '20px' },
+  adminContainer: { padding: '20px', height: '100vh', boxSizing: 'border-box', overflow: 'hidden' },
+  tableWrapper: { maxHeight: '70vh', overflowY: 'auto', border: '1px solid #ddd', overflowX: 'hidden'},
   adminHeader: { display: 'flex', justifyContent: 'space-between', marginBottom: '20px' },
   refreshBtn: { padding: '8px 12px', cursor: 'pointer' },
   filterBar: { display: 'flex', gap: '10px', marginBottom: '20px' },
-  adminTable: { width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' },
+  adminTable: { width: '100%', borderCollapse: 'collapse' },
   th: { borderBottom: '2px solid #ddd', padding: '10px', textAlign: 'left' },
   td: { borderBottom: '1px solid #eee', padding: '10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
   editBtn: { backgroundColor: '#ffc107', marginRight: '5px' },

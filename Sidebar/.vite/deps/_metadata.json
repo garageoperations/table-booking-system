@@ -1,0 +1,46 @@
+{
+  "hash": "d9d2445f",
+  "configHash": "2df5517d",
+  "lockfileHash": "d59c853a",
+  "browserHash": "29a94027",
+  "optimized": {
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "0389f175",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "a79bb50c",
+      "needsInterop": true
+    },
+    "zustand": {
+      "src": "../../node_modules/zustand/esm/index.mjs",
+      "file": "zustand.js",
+      "fileHash": "1778ca1a",
+      "needsInterop": false
+    },
+    "react-icons/fa": {
+      "src": "../../node_modules/react-icons/fa/index.mjs",
+      "file": "react-icons_fa.js",
+      "fileHash": "99b7552a",
+      "needsInterop": false
+    },
+    "react-datepicker": {
+      "src": "../../node_modules/react-datepicker/dist/index.es.js",
+      "file": "react-datepicker.js",
+      "fileHash": "40e26694",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-4J6BLW67": {
+      "file": "chunk-4J6BLW67.js"
+    },
+    "chunk-WYQRYOQT": {
+      "file": "chunk-WYQRYOQT.js"
+    }
+  }
+}
