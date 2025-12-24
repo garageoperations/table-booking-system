@@ -32,10 +32,16 @@ function App() {
           >
             Admin Login
           </button>
-          
+          <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center' }}>
+            {loadingBookings && (
+              <div className="loading-overlay">
+                <div className="spinner"></div>
+              </div>
+            )}
           <Floorplan />
           
           {isSidebarOpen && <BookingSidebar />}
+        </div>
         </div>
       ) : (
         /* --- ADMIN VIEW --- */
