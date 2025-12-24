@@ -8,6 +8,7 @@ import "react-datepicker/dist/react-datepicker.css";
 function App() {
   const [isAdmin, setIsAdmin] = useState(false);
   const isSidebarOpen = useSidebarStore((state) => state.isSidebarOpen);
+  const { loadingBookings } = useSidebarStore();
 
   // Logic for Admin Login
   const loginAsAdmin = () => {
@@ -31,10 +32,16 @@ function App() {
           >
             Admin Login
           </button>
-          
+          <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center' }}>
+            {loadingBookings && (
+              <div className="loading-overlay">
+                <div className="spinner"></div>
+              </div>
+            )}
           <Floorplan />
           
           {isSidebarOpen && <BookingSidebar />}
+        </div>
         </div>
       ) : (
         /* --- ADMIN VIEW --- */
