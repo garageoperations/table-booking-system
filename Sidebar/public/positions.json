@@ -1,22 +1,22 @@
 {
   "layout": {
     "table": { "top": 91, "left": 57 },
-    "chair" : { "id": "ChairGroup-LeftColumn", "top": 445, "left": 946 }
+    "chair" : { "id": "ChairGroup-LeftColumn", "top": 280, "left": 526 }
   },
   "tables": [
-    { "id": "Table-1", "top": 120, "left": 420 },
-    { "id": "Table-2", "top": 225, "left": 420 },
-    { "id": "Table-3", "top": 120, "left": 550 },
-    { "id": "Table-4", "top": 225, "left": 550 },
-    { "id": "Table-5", "top": 120, "left": 680 },
-    { "id": "Table-6", "top": 225, "left": 680 },
-    { "id": "Table-7", "top": 120, "left": 810 },
-    { "id": "Table-8", "top": 225, "left": 810 }
+    { "id": "Table-1", "top": 47, "left": 57 },
+    { "id": "Table-2", "top": 152, "left": 56 },
+    { "id": "Table-3", "top": 47, "left": 186 },
+    { "id": "Table-4", "top": 152, "left": 185 },
+    { "id": "Table-5", "top": 47, "left": 311 },
+    { "id": "Table-6", "top": 152, "left": 316 },
+    { "id": "Table-7", "top": 47, "left": 440 },
+    { "id": "Table-8", "top": 152, "left": 440 }
   ],
   "wideTables" : [
-    { "id": "Table-9", "top": 270, "left": 955 },
-    { "id": "Table-10", "top": 405, "left": 955 },
-    { "id": "Table-11", "top": 530, "left": 955 }
+    { "id": "Table-9", "top": 198, "left": 594 },
+    { "id": "Table-10", "top": 328, "left": 594 },
+    { "id": "Table-11", "top": 458, "left": 594 }
   ],
   "chairs": [
     { "id": "Chair-1",  "top": 0,   "left": 0 },
@@ -33,7 +33,7 @@
     { "id": "Chair-11", "top": 304, "left": 64}
   ],  
   "rooms" : [
-    { "id": "Room-1", "top": 205, "left": 1265},
-    { "id": "Room-2", "top": 205, "left": 1355}
+    { "id": "Room-1", "top": 129, "left": 903},
+    { "id": "Room-2", "top": 129, "left": 994}
   ]
 }

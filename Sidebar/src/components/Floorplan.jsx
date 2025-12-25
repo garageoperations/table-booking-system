@@ -261,8 +261,8 @@ const normalize = s =>
           <button
             className="wide-table-btn absolute"
             style={{
-              top: table.top + layout.table.top,
-              left: table.left + layout.table.left,
+              top: table.top,
+              left: table.left,
               background: getHeatmapColor(table.busyness),  // 🔥 heatmap
               transition: "background 0.3s ease"
             }}
@@ -291,8 +291,8 @@ const normalize = s =>
           <button
             className="room-btn absolute"
             style={{
-              top: room.top + layout.table.top,
-              left: room.left + layout.table.left,
+              top: room.top,
+              left: room.left,
               background: getHeatmapColor(room.busyness),  // 🔥 heatmap
               transition: "background 0.3s ease"
             }}
