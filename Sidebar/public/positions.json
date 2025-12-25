@@ -4,14 +4,14 @@
     "chair" : { "id": "ChairGroup-LeftColumn", "top": 445, "left": 946 }
   },
   "tables": [
-    { "id": "Table-1", "top": 120, "left": 420 },
-    { "id": "Table-2", "top": 225, "left": 420 },
-    { "id": "Table-3", "top": 120, "left": 550 },
-    { "id": "Table-4", "top": 225, "left": 550 },
-    { "id": "Table-5", "top": 120, "left": 680 },
-    { "id": "Table-6", "top": 225, "left": 680 },
-    { "id": "Table-7", "top": 120, "left": 810 },
-    { "id": "Table-8", "top": 225, "left": 810 }
+    { "id": "Table-1", "top": 50, "left": 50 },
+    { "id": "Table-2", "top": 155, "left": 50 },
+    { "id": "Table-3", "top": 50, "left": 180 },
+    { "id": "Table-4", "top": 155, "left": 180 },
+    { "id": "Table-5", "top": 50, "left": 310 },
+    { "id": "Table-6", "top": 155, "left": 310 },
+    { "id": "Table-7", "top": 50, "left": 440 },
+    { "id": "Table-8", "top": 155, "left": 440 }
   ],
   "wideTables" : [
     { "id": "Table-9", "top": 270, "left": 955 },
