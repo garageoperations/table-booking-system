@@ -143,10 +143,15 @@ export default function BookingSidebar()  {
 
     const timeRange = formatTimeRange(selectedTimes);
 
+    const dateObject = new Date(selectedDate);
+    const day = dateObject.toLocaleDateString('en-SG', {
+      weekday: 'long'
+    })
+
     const data = {
-      table: selectedTable,
-      seat: selectedSeat,
-      iso: selectedDate,
+      table: selectedTable === null ? "null" : selectedTable,
+      seat: selectedSeat === null ? "null" : selectedSeat,
+      day: day,
       date: formattedDate,
       time: timeRange,
       name: formData.name,
@@ -156,9 +161,11 @@ export default function BookingSidebar()  {
     };
 
     try {
-      const scriptURL = "https://script.google.com/macros/s/AKfycby5ffgZAXyPyLzKTbjEsDoYZXUmP4rK5hTdh2CEDTc5Bnsr9kZGeGCz7ak90raKBCuP_A/exec";
-      const params = new URLSearchParams(data).toString();
-      const response = await fetch(`${scriptURL}?${params}`, { method:'GET' });
+      const scriptURL = "https://script.google.com/macros/s/AKfycbxSl7Syi_St0MgE9s4uD7AEuiPCcx9mu-rmRxVreg96zkQdxqHcWeZFd15SLkSITWDq/exec";
+      const response = await fetch(scriptURL, {
+        method: "POST",
+        body: JSON.stringify(data)
+      });
       const result = await response.json();
 
       if (result.result !== 'success') {
