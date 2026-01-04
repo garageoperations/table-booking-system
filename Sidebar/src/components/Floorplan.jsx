@@ -31,6 +31,8 @@ export default function Floorplan() {
 const baseWidth = 1080;
 const baseHeight = 629;
 
+const webAppUrl = "https://script.google.com/macros/s/AKfycbxSl7Syi_St0MgE9s4uD7AEuiPCcx9mu-rmRxVreg96zkQdxqHcWeZFd15SLkSITWDq/exec"
+
 useEffect(() => {
   if (!imgRef.current) return;
 
@@ -101,7 +103,7 @@ const normalize = s =>
 
   useEffect(() => {
     setLoadingBookings(true);
-    fetch("https://script.google.com/macros/s/AKfycby5ffgZAXyPyLzKTbjEsDoYZXUmP4rK5hTdh2CEDTc5Bnsr9kZGeGCz7ak90raKBCuP_A/exec?action=get&date="+toDDMMYYYY(selectedDate))
+    fetch(webAppUrl+"?action=get&date="+toDDMMYYYY(selectedDate))
     .then(res => res.json())
     .then(data => {
       const fetchedBookings = data.bookings || [];
