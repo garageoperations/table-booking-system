@@ -12,7 +12,8 @@ export default function BookingSidebar()  {
     name: '',
     telegram: '',
     email: '',
-    reason: ''
+    reason: '',
+    customReason: ''
   });
 
   const generateTimeSlots = () => {
@@ -36,7 +37,7 @@ export default function BookingSidebar()  {
   const toDDMMYYYY = (date) => {
     const d = new Date(date);
     const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
+    const month = String(d.getMonth() + 1).padStart(2, '0'); 
     const year = d.getFullYear();
     return `${day}${month}${year}`;
   };
@@ -160,7 +161,7 @@ export default function BookingSidebar()  {
       name: formData.name,
       telegram: formData.telegram,
       email: formData.email,
-      reason: formData.reason
+      reason: formData.reason === 'others' ? formData.customReason : formData.reason
     };
 
     try {
@@ -185,7 +186,7 @@ export default function BookingSidebar()  {
         Telegram: ${formData.telegram}
         Email: ${formData.email}`);
 
-      setFormData({ name:'', telegram:'', email:'', reason:'' });
+      setFormData({ name:'', telegram:'', email:'', reason:'', customReason:'' });
       setSelectedTimes([]);
       setRefreshKey(prev => prev + 1);
     } catch (error) {
@@ -194,7 +195,7 @@ export default function BookingSidebar()  {
     }
   };
 
-  const categories = bookingType === 'table' ? ["DIP","FYP","Flagship"] : ["Individual"];
+  const categories = ["Study", "Project", "FYP", "Others"];
 
   return (
     <div style={styles.container}>
@@ -240,17 +241,16 @@ export default function BookingSidebar()  {
                 })}
               </div>
 
-              {/* Next Button */}
-             {selectedTimes.length > 0 && (
-  <div style={{ textAlign: 'center', marginTop: '0.5rem' }}>
-    <button 
-      style={{...styles.submitButton, display: 'inline-block', width: 'auto', padding: '0.5rem 1.5rem'}}
-      onClick={() => setActiveTab('info')}
-    >
-      ➡️ Next
-    </button>
-  </div>
-)}
+              {selectedTimes.length > 0 && (
+                <div style={{ textAlign: 'center', marginTop: '0.5rem' }}>
+                  <button 
+                    style={{...styles.submitButton, display: 'inline-block', width: 'auto', padding: '0.5rem 1.5rem'}}
+                    onClick={() => setActiveTab('info')}
+                  >
+                    ➡️ Next
+                  </button>
+                </div>
+              )}
 
             </div>
           </div>
@@ -271,7 +271,7 @@ export default function BookingSidebar()  {
                 </label>
               </div>
               <div style={styles.formGroup}>
-                <label style={styles.label}> NTU Email:
+                <label style={styles.label}>NTU Email:
                   <input type="email" name="email" value={formData.email} onChange={handleFormChange} required style={styles.input}/>
                 </label>
               </div>
@@ -283,6 +283,23 @@ export default function BookingSidebar()  {
                   </select>
                 </label>
               </div>
+
+              {formData.reason === 'others' && (
+                <div style={styles.formGroup}>
+                  <label style={styles.label}>Please specify:
+                    <input
+                      type="text"
+                      name="customReason"
+                      value={formData.customReason || ''}
+                      onChange={handleFormChange}
+                      required
+                      placeholder="Enter your reason"
+                      style={styles.input}
+                    />
+                  </label>
+                </div>
+              )}
+
               <button type="submit" style={styles.submitButton}>✅ Confirm Booking</button>
             </form>
           </div>
