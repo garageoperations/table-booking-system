@@ -144,7 +144,7 @@ const normalize = s =>
         merged.filter((i) => wideTableIds.includes(i.id))
       );
 
-      setRoomsWithBusyness(merged.filter((i) => rooms.some(r => r.id === i.id)));
+      setRoomsWithBusyness(merged.filter((i) => i.id.startsWith("Room-")));
       setChairsWithBusyness(merged.filter((i) => i.id.startsWith("Chair-")));
     })
     .catch(console.error)
@@ -153,12 +153,13 @@ const normalize = s =>
   }, [selectedDate, tables, wideTables, chairs, rooms, refreshKey])
 
   function getHeatmapColor(value) {
-    if (value === 0) return "#28a745"; // Green when Empty
+    if (value === 0) return "#28a745"; // no color for empty
     const percent = value / 24; // scale 0-24 → 0–1
     // light pink → deep red
     const lightness = 90 - percent * 50; 
     return `hsl(0, 100%, ${lightness}%)`;
   }
+
 
   function HoverBubbleContent({ hoverInfo }) {
     const { type, data } = hoverInfo;
@@ -339,7 +340,7 @@ const normalize = s =>
             onMouseLeave={() => setHoverInfo(null)}
         onClick={() => {
           setBookingType("Chair");
-          setSelectedSeat(chair.id.replace("-", " "));
+          setSelectedSeat("Chair " + (i+1));
           setSelectedTable(null);
           clearSelectedTimes();
           openSidebar();
