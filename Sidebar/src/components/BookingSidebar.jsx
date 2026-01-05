@@ -1,5 +1,5 @@
 // src/components/BookingSidebar.jsx
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { FaChair, FaCalendarAlt, FaUser } from 'react-icons/fa';
 import { useSidebarStore } from '../lib/sidebarStore';
 
@@ -12,12 +12,9 @@ export default function BookingSidebar()  {
     name: '',
     telegram: '',
     email: '',
-    reason: ''
+    reason: '',
+    customReason: ''
   });
-
-  useEffect(() => {
-    setActiveTab('datetime');
-  }, [selectedTimes])
 
   const generateTimeSlots = () => {
     const slots = [];
@@ -40,7 +37,7 @@ export default function BookingSidebar()  {
   const toDDMMYYYY = (date) => {
     const d = new Date(date);
     const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
+    const month = String(d.getMonth() + 1).padStart(2, '0'); 
     const year = d.getFullYear();
     return `${day}${month}${year}`;
   };
@@ -127,9 +124,15 @@ export default function BookingSidebar()  {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+     const emailForValidation = formData.email.trim().toLowerCase();
 
-    if (isSubmitting) return;
+    // Check if ntu email
+    if (!emailForValidation.endsWith('@e.ntu.edu.sg')) {
+      alert("❌ Access Denied: Please use your @e.ntu.edu.sg email address.");
+      return;
+    }
 
+    
     const emailForValidation = formData.email.trim().toLowerCase();
 
     // Check if ntu email
@@ -166,7 +169,7 @@ export default function BookingSidebar()  {
       name: formData.name,
       telegram: formData.telegram,
       email: formData.email,
-      reason: formData.reason
+      reason: formData.reason === 'others' ? formData.customReason : formData.reason
     };
 
     //Start loading
@@ -195,7 +198,7 @@ export default function BookingSidebar()  {
         Telegram: ${formData.telegram}
         Email: ${formData.email}`);
 
-      setFormData({ name:'', telegram:'', email:'', reason:'' });
+      setFormData({ name:'', telegram:'', email:'', reason:'', customReason:'' });
       setSelectedTimes([]);
       setRefreshKey(prev => prev + 1);
     } catch (error) {
@@ -207,7 +210,7 @@ export default function BookingSidebar()  {
   }
   };
 
-  const categories = bookingType === 'table' ? ["DIP","FYP","Flagship"] : ["Individual"];
+  const categories = ["Study", "Project", "FYP", "Others"];
 
   return (
     <div style={styles.container}>
@@ -229,13 +232,13 @@ export default function BookingSidebar()  {
                   const isBooked = bookedSlots.has(time);
                   return (
                     <button 
-                    key={time} 
-                    disabled={isBooked}
-                    style={{
-                      ...styles.timeButton,
-                      ...(isSelected?styles.selectedTime:{}),
-                      ...(isBooked?styles.disabledTime:{})
-                    }}
+                      key={time} 
+                      disabled={isBooked}
+                      style={{
+                        ...styles.timeButton,
+                        ...(isSelected?styles.selectedTime:{}),
+                        ...(isBooked?styles.disabledTime:{})
+                      }}
                       onClick={() => {
                         if (isBooked) return;
                         if (isSelected) setSelectedTimes(selectedTimes.filter(t=>t!==time));
@@ -245,10 +248,25 @@ export default function BookingSidebar()  {
                           if (!areConsecutive(newSel)) { alert("Slots must be consecutive."); return; }
                           setSelectedTimes(newSel);
                         }
-                      }}>{time}</button>
+                      }}
+                    >
+                      {time}
+                    </button>
                   )
                 })}
               </div>
+
+              {selectedTimes.length > 0 && (
+                <div style={{ textAlign: 'center', marginTop: '0.5rem' }}>
+                  <button 
+                    style={{...styles.submitButton, display: 'inline-block', width: 'auto', padding: '0.5rem 1.5rem'}}
+                    onClick={() => setActiveTab('info')}
+                  >
+                    ➡️ Next
+                  </button>
+                </div>
+              )}
+
             </div>
           </div>
         )}
@@ -268,7 +286,7 @@ export default function BookingSidebar()  {
                 </label>
               </div>
               <div style={styles.formGroup}>
-                <label style={styles.label}> NTU Email:
+                <label style={styles.label}> NTU NTU Email:
                   <input type="email" name="email" value={formData.email} onChange={handleFormChange} required style={styles.input}/>
                 </label>
               </div>
@@ -280,17 +298,24 @@ export default function BookingSidebar()  {
                   </select>
                 </label>
               </div>
-              <button 
-              type="submit" 
-              disabled={isSubmitting} // Disable the button while loading
-              style={{
-              ...styles.submitButton,
-             backgroundColor: isSubmitting ? '#ccc' : '#007bff', // Turn grey while loading
-             cursor: isSubmitting ? 'not-allowed' : 'pointer'
-         }}
-          >
-          {isSubmitting ? '⌛ Processing...' : '✅ Confirm Booking'}
-         </button>
+
+              {formData.reason === 'others' && (
+                <div style={styles.formGroup}>
+                  <label style={styles.label}>Please specify:
+                    <input
+                      type="text"
+                      name="customReason"
+                      value={formData.customReason || ''}
+                      onChange={handleFormChange}
+                      required
+                      placeholder="Enter your reason"
+                      style={styles.input}
+                    />
+                  </label>
+                </div>
+              )}
+
+              <button type="submit" style={styles.submitButton}>✅ Confirm Booking</button>
             </form>
           </div>
         )}
@@ -416,10 +441,10 @@ const styles = {
     border: '1px solid #007bff'
   },
   disabledTime: {
-  backgroundColor: "#eee",
-  color: "#999",
-  cursor: "not-allowed",
-  textDecoration: "line-through"
+    backgroundColor: "#eee",
+    color: "#999",
+    cursor: "not-allowed",
+    textDecoration: "line-through"
   },
   selectedText: {
     marginTop: '1rem',
@@ -448,7 +473,7 @@ const styles = {
     cursor: 'pointer',
     marginTop: '1rem'
   },
-   header: {
+  header: {
     position: 'relative',
     display: 'flex',
     alignItems: 'center',
@@ -459,25 +484,25 @@ const styles = {
   headerTitle: {
     fontWeight: 'bold',
     fontSize: '1rem',
-    flex: 1, // 👈 takes up all space so button gets pushed to the right
+    flex: 1,
     color: '#fff'
   },
   closeButton: {
     position: 'absolute',
-    right: '1rem',  // 👈 stick to right
+    right: '1rem',
     top: '50%',
-    transform: 'translateY(-50%)', // vertically center in header
+    transform: 'translateY(-50%)',
     background: 'none',
     border: 'none',
     fontSize: '1.2rem',
     cursor: 'pointer'
   },
   selectedDateDisplay: {
-  marginBottom: '1rem',
-  padding: '0.75rem',
-  borderRadius: '4px',
-  fontWeight: 'bold',
-  color: '#333',
-  fontSize: '0.95rem'
-}
+    marginBottom: '1rem',
+    padding: '0.75rem',
+    borderRadius: '4px',
+    fontWeight: 'bold',
+    color: '#333',
+    fontSize: '0.95rem'
+  }
 };
