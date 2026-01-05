@@ -6,7 +6,7 @@ import { useSidebarStore } from '../lib/sidebarStore';
 export default function BookingSidebar()  {
   const { isSidebarOpen, closeSidebar } = useSidebarStore();
   const { selectedSeat, selectedTable, bookingType, selectedDate, bookings, selectedTimes, setSelectedTimes, refreshKey, setRefreshKey } = useSidebarStore();
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState('datetime');
   const [formData, setFormData] = useState({
     name: '',
@@ -128,7 +128,8 @@ export default function BookingSidebar()  {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    
+    if (isSubmitting) return;
+
     const emailForValidation = formData.email.trim().toLowerCase();
 
     // Check if ntu email
@@ -168,6 +169,9 @@ export default function BookingSidebar()  {
       reason: formData.reason
     };
 
+    //Start loading
+    setIsSubmitting(true);
+
     try {
       const scriptURL = "https://script.google.com/macros/s/AKfycbxSl7Syi_St0MgE9s4uD7AEuiPCcx9mu-rmRxVreg96zkQdxqHcWeZFd15SLkSITWDq/exec";
       const response = await fetch(scriptURL, {
@@ -178,6 +182,7 @@ export default function BookingSidebar()  {
 
       if (result.result !== 'success') {
         alert("❌ Failed to submit booking: " + (result.error || "Unknown error"));
+        setIsSubmitting(false); // Reset on error
         return;
       }
 
@@ -196,7 +201,10 @@ export default function BookingSidebar()  {
     } catch (error) {
       console.error("Error submitting booking:", error);
       alert("❌ Failed to submit booking: " + error.message);
-    }
+    } finally {
+    // End Loading (this runs whether try succeeds or catches)
+    setIsSubmitting(false); 
+  }
   };
 
   const categories = bookingType === 'table' ? ["DIP","FYP","Flagship"] : ["Individual"];
@@ -272,7 +280,17 @@ export default function BookingSidebar()  {
                   </select>
                 </label>
               </div>
-              <button type="submit" style={styles.submitButton}>✅ Confirm Booking</button>
+              <button 
+              type="submit" 
+              disabled={isSubmitting} // Disable the button while loading
+              style={{
+              ...styles.submitButton,
+             backgroundColor: isSubmitting ? '#ccc' : '#007bff', // Turn grey while loading
+             cursor: isSubmitting ? 'not-allowed' : 'pointer'
+         }}
+          >
+          {isSubmitting ? '⌛ Processing...' : '✅ Confirm Booking'}
+         </button>
             </form>
           </div>
         )}
