@@ -30,10 +30,10 @@
     { "id": "Chair-9",  "top": 248, "left": 0 },
     { "id": "Chair-10", "top": 280, "left": 0 },
     { "id": "Chair-11", "top": 304, "left": 34},
-    { "id": "Chair-11", "top": 304, "left": 64}
+    { "id": "Chair-12", "top": 304, "left": 64}
   ],  
   "rooms" : [
-    { "id": "Room-1", "top": 129, "left": 903},
-    { "id": "Room-2", "top": 129, "left": 994}
+    { "id": "Kirchoff-Pod", "top": 129, "left": 903},
+    { "id": "Maxwell-Pod", "top": 129, "left": 994}
   ]
 }

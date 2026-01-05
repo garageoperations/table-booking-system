@@ -144,7 +144,7 @@ const normalize = s =>
         merged.filter((i) => wideTableIds.includes(i.id))
       );
 
-      setRoomsWithBusyness(merged.filter((i) => i.id.startsWith("Room-")));
+      setRoomsWithBusyness(merged.filter((i) => rooms.some(r => r.id === i.id)));
       setChairsWithBusyness(merged.filter((i) => i.id.startsWith("Chair-")));
     })
     .catch(console.error)
@@ -153,7 +153,7 @@ const normalize = s =>
   }, [selectedDate, tables, wideTables, chairs, rooms, refreshKey])
 
   function getHeatmapColor(value) {
-    if (value === 0) return "rgb(0 0 0 / 58%)"; // no color for empty
+    if (value === 0) return "#28a745"; // Green when Empty
     const percent = value / 24; // scale 0-24 → 0–1
     // light pink → deep red
     const lightness = 90 - percent * 50; 
