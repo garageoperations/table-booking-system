@@ -133,7 +133,7 @@ export default function BookingSidebar()  {
     }
 
     
-    const emailForValidation = formData.email.trim().toLowerCase();
+    emailForValidation = formData.email.trim().toLowerCase();
 
     // Check if ntu email
     if (!emailForValidation.endsWith('@e.ntu.edu.sg')) {
