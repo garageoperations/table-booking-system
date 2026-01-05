@@ -128,6 +128,14 @@ export default function BookingSidebar()  {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    
+    const emailForValidation = formData.email.trim().toLowerCase();
+
+    // Check if ntu email
+    if (!emailForValidation.endsWith('@e.ntu.edu.sg')) {
+      alert("❌ Access Denied: Please use your @e.ntu.edu.sg email address.");
+      return;
+    }
     if (!selectedSeat && !selectedTable) {
       alert("❌ Please select a table and seat before submitting.");
       return;
@@ -252,7 +260,7 @@ export default function BookingSidebar()  {
                 </label>
               </div>
               <div style={styles.formGroup}>
-                <label style={styles.label}>Email:
+                <label style={styles.label}> NTU Email:
                   <input type="email" name="email" value={formData.email} onChange={handleFormChange} required style={styles.input}/>
                 </label>
               </div>
