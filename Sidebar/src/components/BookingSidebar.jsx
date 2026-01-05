@@ -1,5 +1,5 @@
 // src/components/BookingSidebar.jsx
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { FaChair, FaCalendarAlt, FaUser } from 'react-icons/fa';
 import { useSidebarStore } from '../lib/sidebarStore';
 
@@ -14,10 +14,6 @@ export default function BookingSidebar()  {
     email: '',
     reason: ''
   });
-
-  useEffect(() => {
-    setActiveTab('datetime');
-  }, [selectedTimes])
 
   const generateTimeSlots = () => {
     const slots = [];
@@ -127,6 +123,13 @@ export default function BookingSidebar()  {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+     const emailForValidation = formData.email.trim().toLowerCase();
+
+    // Check if ntu email
+    if (!emailForValidation.endsWith('@e.ntu.edu.sg')) {
+      alert("❌ Access Denied: Please use your @e.ntu.edu.sg email address.");
+      return;
+    }
 
     if (!selectedSeat && !selectedTable) {
       alert("❌ Please select a table and seat before submitting.");
@@ -213,13 +216,13 @@ export default function BookingSidebar()  {
                   const isBooked = bookedSlots.has(time);
                   return (
                     <button 
-                    key={time} 
-                    disabled={isBooked}
-                    style={{
-                      ...styles.timeButton,
-                      ...(isSelected?styles.selectedTime:{}),
-                      ...(isBooked?styles.disabledTime:{})
-                    }}
+                      key={time} 
+                      disabled={isBooked}
+                      style={{
+                        ...styles.timeButton,
+                        ...(isSelected?styles.selectedTime:{}),
+                        ...(isBooked?styles.disabledTime:{})
+                      }}
                       onClick={() => {
                         if (isBooked) return;
                         if (isSelected) setSelectedTimes(selectedTimes.filter(t=>t!==time));
@@ -229,10 +232,26 @@ export default function BookingSidebar()  {
                           if (!areConsecutive(newSel)) { alert("Slots must be consecutive."); return; }
                           setSelectedTimes(newSel);
                         }
-                      }}>{time}</button>
+                      }}
+                    >
+                      {time}
+                    </button>
                   )
                 })}
               </div>
+
+              {/* Next Button */}
+             {selectedTimes.length > 0 && (
+  <div style={{ textAlign: 'center', marginTop: '0.5rem' }}>
+    <button 
+      style={{...styles.submitButton, display: 'inline-block', width: 'auto', padding: '0.5rem 1.5rem'}}
+      onClick={() => setActiveTab('info')}
+    >
+      ➡️ Next
+    </button>
+  </div>
+)}
+
             </div>
           </div>
         )}
@@ -252,7 +271,7 @@ export default function BookingSidebar()  {
                 </label>
               </div>
               <div style={styles.formGroup}>
-                <label style={styles.label}>Email:
+                <label style={styles.label}> NTU Email:
                   <input type="email" name="email" value={formData.email} onChange={handleFormChange} required style={styles.input}/>
                 </label>
               </div>
@@ -390,10 +409,10 @@ const styles = {
     border: '1px solid #007bff'
   },
   disabledTime: {
-  backgroundColor: "#eee",
-  color: "#999",
-  cursor: "not-allowed",
-  textDecoration: "line-through"
+    backgroundColor: "#eee",
+    color: "#999",
+    cursor: "not-allowed",
+    textDecoration: "line-through"
   },
   selectedText: {
     marginTop: '1rem',
@@ -422,7 +441,7 @@ const styles = {
     cursor: 'pointer',
     marginTop: '1rem'
   },
-   header: {
+  header: {
     position: 'relative',
     display: 'flex',
     alignItems: 'center',
@@ -433,25 +452,25 @@ const styles = {
   headerTitle: {
     fontWeight: 'bold',
     fontSize: '1rem',
-    flex: 1, // 👈 takes up all space so button gets pushed to the right
+    flex: 1,
     color: '#fff'
   },
   closeButton: {
     position: 'absolute',
-    right: '1rem',  // 👈 stick to right
+    right: '1rem',
     top: '50%',
-    transform: 'translateY(-50%)', // vertically center in header
+    transform: 'translateY(-50%)',
     background: 'none',
     border: 'none',
     fontSize: '1.2rem',
     cursor: 'pointer'
   },
   selectedDateDisplay: {
-  marginBottom: '1rem',
-  padding: '0.75rem',
-  borderRadius: '4px',
-  fontWeight: 'bold',
-  color: '#333',
-  fontSize: '0.95rem'
-}
+    marginBottom: '1rem',
+    padding: '0.75rem',
+    borderRadius: '4px',
+    fontWeight: 'bold',
+    color: '#333',
+    fontSize: '0.95rem'
+  }
 };

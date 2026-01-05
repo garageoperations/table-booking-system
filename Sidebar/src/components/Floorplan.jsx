@@ -339,7 +339,7 @@ const normalize = s =>
             onMouseLeave={() => setHoverInfo(null)}
         onClick={() => {
           setBookingType("Chair");
-          setSelectedSeat("Chair " + (i+1));
+          setSelectedSeat(chair.id.replace("-", " "));
           setSelectedTable(null);
           clearSelectedTimes();
           openSidebar();
