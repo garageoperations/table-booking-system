@@ -132,14 +132,7 @@ export default function BookingSidebar()  {
       return;
     }
 
-    
-    emailForValidation = formData.email.trim().toLowerCase();
 
-    // Check if ntu email
-    if (!emailForValidation.endsWith('@e.ntu.edu.sg')) {
-      alert("❌ Access Denied: Please use your @e.ntu.edu.sg email address.");
-      return;
-    }
     if (!selectedSeat && !selectedTable) {
       alert("❌ Please select a table and seat before submitting.");
       return;
@@ -286,7 +279,7 @@ export default function BookingSidebar()  {
                 </label>
               </div>
               <div style={styles.formGroup}>
-                <label style={styles.label}> NTU NTU Email:
+                <label style={styles.label}> NTU Email:
                   <input type="email" name="email" value={formData.email} onChange={handleFormChange} required style={styles.input}/>
                 </label>
               </div>
@@ -315,7 +308,17 @@ export default function BookingSidebar()  {
                 </div>
               )}
 
-              <button type="submit" style={styles.submitButton}>✅ Confirm Booking</button>
+              <button 
+  type="submit" 
+  disabled={isSubmitting} // Disable the button while loading
+  style={{
+    ...styles.submitButton,
+    backgroundColor: isSubmitting ? '#ccc' : '#007bff', // Turn grey while loading
+    cursor: isSubmitting ? 'not-allowed' : 'pointer'
+  }}
+>
+  {isSubmitting ? '⌛ Processing...' : '✅ Confirm Booking'}
+</button>
             </form>
           </div>
         )}
