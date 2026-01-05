@@ -151,12 +151,13 @@ const normalize = s =>
   }, [selectedDate, tables, wideTables, chairs, rooms, refreshKey])
 
   function getHeatmapColor(value) {
-    if (value === 0) return "rgb(0 0 0 / 58%)"; // no color for empty
+    if (value === 0) return "#28a745"; // no color for empty
     const percent = value / 24; // scale 0-24 → 0–1
     // light pink → deep red
     const lightness = 90 - percent * 50; 
     return `hsl(0, 100%, ${lightness}%)`;
   }
+
 
   function HoverBubbleContent({ hoverInfo }) {
     const { type, data } = hoverInfo;

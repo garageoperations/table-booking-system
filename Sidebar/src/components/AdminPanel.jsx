@@ -121,7 +121,7 @@ export default function AdminPanel() {
                   <td style={styles.td}>{isEditing ? <input style={styles.editInput} value={editFormData.date} onChange={(e) => setEditFormData({...editFormData, date: e.target.value})} /> : sanitize(booking.date)}</td>
                   <td style={styles.td}>{isEditing ? <input style={styles.editInput} value={editFormData.time} onChange={(e) => setEditFormData({...editFormData, time: e.target.value})} /> : sanitize(booking.time)}</td>
                   <td style={styles.td}>{isEditing ? <input style={styles.editInput} value={editFormData.table} onChange={(e) => setEditFormData({...editFormData, table: e.target.value})} /> : booking.table}</td>
-                  <td style={styles.td}>{sanitize(booking.seat)}</td>
+                  <td style={styles.td}>{isEditing ? <input style={styles.editInput} value={editFormData.seat} onChange={(e) => setEditFormData({...editFormData, seat: e.target.value})} /> : booking.seat}</td>
                   <td style={styles.td}>{isEditing ? <input style={styles.editInput} value={editFormData.name} onChange={(e) => setEditFormData({...editFormData, name: e.target.value})} /> : booking.name}</td>
                   <td style={styles.td}>
                     {isEditing ? (
