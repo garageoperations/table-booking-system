@@ -31,7 +31,7 @@ export default function Floorplan() {
 const baseWidth = 1080;
 const baseHeight = 629;
 
-const webAppUrl = "https://script.google.com/macros/s/AKfycbxSl7Syi_St0MgE9s4uD7AEuiPCcx9mu-rmRxVreg96zkQdxqHcWeZFd15SLkSITWDq/exec"
+const webAppUrl = "https://script.google.com/macros/s/AKfycbz2VUc5FFhTX2m2VTbP5ezpvGB9zzYQMwYcHHVIRrGXns-Pw0gDg15QGfaw7bjcQTSn8A/exec"
 
 useEffect(() => {
   if (!imgRef.current) return;
@@ -135,6 +135,7 @@ const normalize = s =>
       });
 
       const wideTableIds = ["Table-9", "Table-10", "Table-11"];
+      const roomNames = ["Kirchoff-Pod", "Maxwell-Pod"];
 
       setTableWithBusyness(
         merged.filter((i) => i.id.startsWith("Table-") && !wideTableIds.includes(i.id))
@@ -144,7 +145,7 @@ const normalize = s =>
         merged.filter((i) => wideTableIds.includes(i.id))
       );
 
-      setRoomsWithBusyness(merged.filter((i) => i.id.startsWith("Room-")));
+      setRoomsWithBusyness(merged.filter((i) => roomNames.includes(i.id)));
       setChairsWithBusyness(merged.filter((i) => i.id.startsWith("Chair-")));
     })
     .catch(console.error)

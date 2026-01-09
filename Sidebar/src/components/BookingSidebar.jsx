@@ -42,6 +42,17 @@ export default function BookingSidebar()  {
     return `${day}${month}${year}`;
   };
 
+  const toDDMMYYYYhhmm = (date) => {
+    const dd = String(date.getDate()).padStart(2, '0');
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const yyyy = date.getFullYear();
+
+    const HH = String(date.getHours()).padStart(2, '0');
+    const MM = String(date.getMinutes()).padStart(2, '0');
+
+    return `${dd}/${mm}/${yyyy}, ${HH}:${MM}`;
+  }
+
   const handleFormChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -162,14 +173,15 @@ export default function BookingSidebar()  {
       name: formData.name,
       telegram: formData.telegram,
       email: formData.email,
-      reason: formData.reason === 'others' ? formData.customReason : formData.reason
+      reason: formData.reason === 'others' ? formData.customReason : formData.reason,
+      dateCreated: toDDMMYYYYhhmm(new Date())
     };
 
     //Start loading
     setIsSubmitting(true);
 
     try {
-      const scriptURL = "https://script.google.com/macros/s/AKfycbxSl7Syi_St0MgE9s4uD7AEuiPCcx9mu-rmRxVreg96zkQdxqHcWeZFd15SLkSITWDq/exec";
+      const scriptURL = "https://script.google.com/macros/s/AKfycbz2VUc5FFhTX2m2VTbP5ezpvGB9zzYQMwYcHHVIRrGXns-Pw0gDg15QGfaw7bjcQTSn8A/exec";
       const response = await fetch(scriptURL, {
         method: "POST",
         body: JSON.stringify(data)
@@ -344,7 +356,8 @@ const styles = {
     fontFamily: 'Arial, sans-serif',
     position: 'fixed',
     right: 0,
-    top: 0
+    top: 0,
+    overflowY: 'auto'
   },
   tabs: {
     display: 'flex',
