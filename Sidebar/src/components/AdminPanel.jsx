@@ -11,7 +11,7 @@ export default function AdminPanel() {
   const [editingRow, setEditingRow] = useState(null);
   const [editFormData, setEditFormData] = useState({});
 
-  const webAppUrl = "https://script.google.com/macros/s/AKfycbxSl7Syi_St0MgE9s4uD7AEuiPCcx9mu-rmRxVreg96zkQdxqHcWeZFd15SLkSITWDq/exec";
+  const webAppUrl = "https://script.google.com/macros/s/AKfycbwNuv7HbV_IazA8YAQjx4xsvKIezsqy-_qQleGkOLhikqh_oGyVJP8wZCKqUkE_s8M8Og/exec";
 
    //HELPER FUNCTIONS
   const sanitize = (val) => {
