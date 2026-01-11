@@ -11,9 +11,20 @@ export default function AdminPanel() {
   const [editingRow, setEditingRow] = useState(null);
   const [editFormData, setEditFormData] = useState({});
 
-  const webAppUrl = "https://script.google.com/macros/s/AKfycbwNuv7HbV_IazA8YAQjx4xsvKIezsqy-_qQleGkOLhikqh_oGyVJP8wZCKqUkE_s8M8Og/exec";
+  const webAppUrl = "https://script.google.com/macros/s/AKfycbwNuv7HbV_IazA8YAQjx4xsvKIezsqy-_qQleGkOLhikqh_oGyVJP8wZCKqUkE_s8M8Og/exec"; // <--- Make sure this is your URL
 
-   //HELPER FUNCTIONS
+  // --- HELPER: Format the "Date Created" timestamp ---
+  const formatTimestamp = (ts) => {
+    if (!ts) return "-"; // Handle empty cells (like the first row in your image)
+    const date = new Date(ts);
+    // Returns format like: "11/01, 11:50"
+    return date.toLocaleDateString('en-GB', { 
+      day: '2-digit', month: '2-digit' 
+    }) + ", " + date.toLocaleTimeString('en-GB', {
+      hour: '2-digit', minute: '2-digit'
+    });
+  };
+
   const sanitize = (val) => {
     if (!val) return "-";
     const str = String(val);
@@ -43,43 +54,38 @@ export default function AdminPanel() {
       date: sanitize(booking.date),
       time: sanitize(booking.time),
       table: booking.table,
-      name: booking.name
+      name: booking.name,
+      seat: booking.seat
     });
   };
 
   const handleSave = async (rowId) => {
-  try {
-    
-    const params = new URLSearchParams({
-      action: 'edit',
-      rowId: rowId,
-      ...editFormData // This spreads date, time, table, name into the params
-    });
-    
-    console.log("Saving to:", `${webAppUrl}?${params.toString()}`); // DEBUG LOG
-
-    const response = await fetch(`${webAppUrl}?${params.toString()}`);
-    const data = await response.json();
-
-    if (data.result === 'success') {
-      alert("Updated successfully!");
-      setEditingRow(null);
-      fetchAllBookings(); // Refresh the table
-    } else {
-      alert("Error from Script: " + data.error);
+    try {
+      const params = new URLSearchParams({
+        action: 'edit',
+        rowId: rowId,
+        ...editFormData
+      });
+      const response = await fetch(`${webAppUrl}?${params.toString()}`);
+      const data = await response.json();
+      if (data.result === 'success') {
+        alert("Updated successfully!");
+        setEditingRow(null);
+        fetchAllBookings(); 
+      } else {
+        alert("Error: " + data.error);
+      }
+    } catch (error) {
+      console.error("Save error:", error);
     }
-  } catch (error) {
-    console.error("Save error:", error);
-    alert("Failed to connect to Google Sheets. Check your console.");
-  }
-};
+  };
+
   const handleDelete = async (rowId, name) => {
     if (!window.confirm(`Delete booking for ${name}?`)) return;
     try {
       const response = await fetch(`${webAppUrl}?action=delete&rowId=${rowId}`);
       const data = await response.json();
       if (data.result === 'success') {
-        alert("Deleted!");
         fetchAllBookings();
       }
     } catch (error) { console.error("Delete error:", error); }
@@ -87,11 +93,19 @@ export default function AdminPanel() {
 
   useEffect(() => { fetchAllBookings(); }, []);
 
-  const filteredBookings = bookings.filter((booking) => {
-    const matchesDate = !filterDate || new Date(booking.date).toDateString() === filterDate.toDateString();
-    const matchesTable = !filterTable || booking.table.toString().includes(filterTable);
-    return matchesDate && matchesTable;
-  });
+  // --- SORTING LOGIC: Sort by Timestamp (Newest First) ---
+  const filteredBookings = bookings
+    .filter((booking) => {
+      const matchesDate = !filterDate || new Date(booking.date).toDateString() === filterDate.toDateString();
+      const matchesTable = !filterTable || booking.table.toString().includes(filterTable);
+      return matchesDate && matchesTable;
+    })
+    .sort((a, b) => {
+      // If timestamp exists, sort by that. Otherwise, fall back to 0.
+      const timeA = a.timestamp ? new Date(a.timestamp).getTime() : 0;
+      const timeB = b.timestamp ? new Date(b.timestamp).getTime() : 0;
+      return timeB - timeA; // Descending order
+    });
 
   return (
     <div style={styles.adminContainer}>
@@ -110,7 +124,14 @@ export default function AdminPanel() {
         <table style={styles.adminTable}>
           <thead>
             <tr>
-              <th style={styles.th}>Date</th><th style={styles.th}>Time</th><th style={styles.th}>Table</th><th style={styles.th}>Seat</th><th style={styles.th}>Name</th><th style={styles.th}>Actions</th>
+              {/* --- NEW LEFTMOST HEADER --- */}
+              <th style={styles.th}>Submitted At</th> 
+              <th style={styles.th}>Date</th>
+              <th style={styles.th}>Time</th>
+              <th style={styles.th}>Table</th>
+              <th style={styles.th}>Seat</th>
+              <th style={styles.th}>Name</th>
+              <th style={styles.th}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -118,11 +139,17 @@ export default function AdminPanel() {
               const isEditing = editingRow === booking.rowId;
               return (
                 <tr key={booking.rowId} style={styles.tableRow}>
+                  {/* --- NEW LEFTMOST COLUMN (Non-editable) --- */}
+                  <td style={{...styles.td, fontSize: '0.85rem', color: '#666'}}>
+                    {formatTimestamp(booking.timestamp)}
+                  </td>
+
                   <td style={styles.td}>{isEditing ? <input style={styles.editInput} value={editFormData.date} onChange={(e) => setEditFormData({...editFormData, date: e.target.value})} /> : sanitize(booking.date)}</td>
                   <td style={styles.td}>{isEditing ? <input style={styles.editInput} value={editFormData.time} onChange={(e) => setEditFormData({...editFormData, time: e.target.value})} /> : sanitize(booking.time)}</td>
                   <td style={styles.td}>{isEditing ? <input style={styles.editInput} value={editFormData.table} onChange={(e) => setEditFormData({...editFormData, table: e.target.value})} /> : booking.table}</td>
                   <td style={styles.td}>{isEditing ? <input style={styles.editInput} value={editFormData.seat} onChange={(e) => setEditFormData({...editFormData, seat: e.target.value})} /> : booking.seat}</td>
                   <td style={styles.td}>{isEditing ? <input style={styles.editInput} value={editFormData.name} onChange={(e) => setEditFormData({...editFormData, name: e.target.value})} /> : booking.name}</td>
+                  
                   <td style={styles.td}>
                     {isEditing ? (
                       <><button onClick={() => handleSave(booking.rowId)} style={styles.saveBtn}>Save</button><button onClick={() => setEditingRow(null)} style={styles.cancelBtn}>Cancel</button></>
@@ -148,11 +175,11 @@ const styles = {
   refreshBtn: { padding: '8px 12px', cursor: 'pointer' },
   filterBar: { display: 'flex', gap: '10px', marginBottom: '20px' },
   adminTable: { width: '100%', borderCollapse: 'collapse' },
-  th: { borderBottom: '2px solid #ddd', padding: '10px', textAlign: 'left' },
-  td: { borderBottom: '1px solid #eee', padding: '10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
-  editBtn: { backgroundColor: '#ffc107', marginRight: '5px' },
-  deleteBtn: { backgroundColor: '#dc3545', color: 'white' },
-  saveBtn: { backgroundColor: '#28a745', color: 'white', marginRight: '5px' },
-  cancelBtn: { backgroundColor: '#6c757d', color: 'white' },
-  editInput: { width: '90%' }
+  th: { borderBottom: '2px solid #ddd', padding: '10px', textAlign: 'left'},
+  td: { borderBottom: '1px solid #eee', padding: '10px', whiteSpace: 'nowrap' , overflow: 'hidden', textOverflow: 'ellipsis' },
+  editBtn: { backgroundColor: '#ffc107', marginRight: '5px', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer' },
+  deleteBtn: { backgroundColor: '#dc3545', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer' },
+  saveBtn: { backgroundColor: '#28a745', color: 'white', marginRight: '5px', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer' },
+  cancelBtn: { backgroundColor: '#6c757d', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer' },
+  editInput: { width: '90%', padding: '5px' }
 };
