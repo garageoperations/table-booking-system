@@ -89,7 +89,7 @@ const normalize = s =>
   s?.toLowerCase().replace(/[-\s]/g, "");
 
   useEffect(() => {
-    fetch("/positions.json")
+    fetch("./positions.json")
       .then(res => res.json())
       .then(data => {
         setTables(data.tables);
@@ -170,22 +170,22 @@ const normalize = s =>
 
     switch (type) {
       case "table":
-        imageSrc = "/small_table.jpg";
+        imageSrc = "./small_table.jpg";
         label = data.id.replace("-", " ");
         break;
 
       case "wideTable":
-        imageSrc = "/long_table.jpg";
+        imageSrc = "./long_table.jpg";
         label = data.id.replace("-", " ");
         break;
 
       case "room":
-        imageSrc = "/room.jpg";
+        imageSrc = "./room.jpg";
         label = data.id.replace("-", " ");
         break;
       
       case "chair":
-        imageSrc = "/chairs.jpg";
+        imageSrc = "./chairs.jpg";
         label = data.id.replace("-", " ");
         break;
 
@@ -226,7 +226,7 @@ const normalize = s =>
 
     <div className="floorplan-wrapper" style={{position: "relative"}}>
       {/* Floorplan image */}
-      <img src="/floorplan_plain3.png" alt="Floorplan" className="floorplan-img" />
+      <img src="./floorplan_plain3.png" alt="Floorplan" className="floorplan-img" />
 
       {/* Tables */}
       {tableWithBusyness.map(table => (
