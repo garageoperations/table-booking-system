@@ -83,11 +83,11 @@ button:focus-visible {
     /* Table buttons */
     .table-btn {
       position: absolute;
-      width: 60px;
-      height: 60px;
+      width: 30px;
+      height: 30px;
       background: #ffffff;
       opacity: 0.6;
-      border-radius: 6px;
+      border-radius: 3px;
       color: #ffffff;
       font-size: 14px;
       cursor: pointer;
@@ -100,8 +100,8 @@ button:focus-visible {
     }
     .wide-table-btn {
       position: absolute;
-      width: 115px;
-      height: 60px;
+      width: 57px;
+      height: 30px;
       background: #ffffff;
       opacity: 0.6;
       border-radius: 6px;
