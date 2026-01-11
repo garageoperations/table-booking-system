@@ -215,7 +215,7 @@ export default function BookingSidebar()  {
   }
   };
 
-  const categories = ["Study", "Project", "FYP", "Others"];
+  const categories = ["Individual", "DIP", "FYP", "Flagship-Escendo", "Flagship-Enitio", "Flagship-IdeasJam", "Others"];
 
   return (
     <div style={styles.container}>
@@ -295,6 +295,7 @@ export default function BookingSidebar()  {
                   <input type="email" name="email" value={formData.email} onChange={handleFormChange} required style={styles.input}/>
                 </label>
               </div>
+              {bookingType !== 'Room' && (
               <div style={styles.formGroup}>
                 <label style={styles.label}>Reason for Booking:
                   <select name="reason" value={formData.reason} onChange={handleFormChange} required style={styles.input}>
@@ -303,8 +304,18 @@ export default function BookingSidebar()  {
                   </select>
                 </label>
               </div>
+              )}
 
-              {formData.reason === 'others' && (
+              {bookingType === 'Room' && (
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Reason for Booking:
+                  <span style={{ marginLeft: 8 }}>Others</span>
+                </label>
+                <input type="hidden" name="reason" value="others" />
+              </div>
+              )}
+
+              {(formData.reason === 'others' || bookingType === 'Room') && (
                 <div style={styles.formGroup}>
                   <label style={styles.label}>Please specify:
                     <input
