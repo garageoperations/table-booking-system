@@ -147,7 +147,7 @@ const styles = {
   adminHeader: { display: 'flex', justifyContent: 'space-between', marginBottom: '20px' },
   refreshBtn: { padding: '8px 12px', cursor: 'pointer' },
   filterBar: { display: 'flex', gap: '10px', marginBottom: '20px' },
-  adminTable: { width: '100%', borderCollapse: 'collapse' },
+  adminTable: { width: '100%', borderCollapse: 'collapse', backgroundColor: '#ddd' },
   th: { borderBottom: '2px solid #ddd', padding: '10px', textAlign: 'left' },
   td: { borderBottom: '1px solid #eee', padding: '10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
   editBtn: { backgroundColor: '#ffc107', marginRight: '5px' },
