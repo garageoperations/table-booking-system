@@ -13,10 +13,14 @@ export default function Floorplan() {
   const [layout, setLayout] = useState(null);
   const { openSidebar, setSelectedTable, setSelectedSeat, setBookingType, selectedDate, setSelectedDate, 
     setBookings, clearSelectedTimes, refreshKey, setLoadingBookings } = useSidebarStore();
+
   const [tableWithBusyness, setTableWithBusyness] = useState([]);
+  const [tableLabels, setTableLabels] = useState([]);
   const [wideTablesWithBusyness, setWideTablesWithBusyness] = useState([]);
+  const [wideTableLabels, setWideTableLabels] = useState([]);
   const [roomsWithBusyness, setRoomsWithBusyness] = useState([]);
   const [chairsWithBusyness, setChairsWithBusyness] = useState([]);
+
   const [hoverInfo, setHoverInfo] = useState(null);
   const [mousePos, setMousePos] = useState({ x:0, y:0 });
   const imgRef = useRef(null);
@@ -30,6 +34,12 @@ export default function Floorplan() {
 
 const baseWidth = 1080;
 const baseHeight = 629;
+
+const tableLength = 60;
+const tableWidth = 60;
+const quadLength = tableLength / 2;
+const quadWidth = tableWidth / 2;
+const quadrents = ['A', 'B', 'C', 'D']
 
 const webAppUrl = "https://script.google.com/macros/s/AKfycbwNuv7HbV_IazA8YAQjx4xsvKIezsqy-_qQleGkOLhikqh_oGyVJP8wZCKqUkE_s8M8Og/exec"
 
@@ -138,12 +148,16 @@ const normalize = s =>
       const roomNames = ["Kirchoff-Pod", "Maxwell-Pod"];
 
       setTableWithBusyness(
-        merged.filter((i) => i.id.startsWith("Table-") && !wideTableIds.includes(i.id))
+        merged.filter((i) => i.id.startsWith("Table-") && !wideTableIds.includes(i.id.slice(0,-1)))
       );
 
+      setTableLabels(merged.filter((i) => i.id.startsWith("Table-") && !wideTableIds.includes(i.id.slice(0,-1)) && i.id.endsWith('A')))
+
       setWideTablesWithBusyness(
-        merged.filter((i) => wideTableIds.includes(i.id))
+        merged.filter((i) => wideTableIds.includes(i.id.slice(0,-1)))
       );
+
+      setWideTableLabels(merged.filter((i) => i.id.startsWith("Table-") && wideTableIds.includes(i.id.slice(0,-1)) && i.id.endsWith('A')))
 
       setRoomsWithBusyness(merged.filter((i) => roomNames.includes(i.id)));
       setChairsWithBusyness(merged.filter((i) => i.id.startsWith("Chair-")));
@@ -255,8 +269,29 @@ const normalize = s =>
               clearSelectedTimes();
               openSidebar()}}
           >
-            {table.id.replace("-", " ")}
           </button>
+        </div>
+      ))}
+      {tableLabels.map(table => (
+        <div key={table.id.slice(0,-1)} className="table-group" id={table.id.slice(0,-1)}>
+          {/* Table Button Label */}
+          <button
+            className="table-button absolute"
+            style={{
+              position: 'absolute',
+              top: table.top,
+              left: table.left,
+              width: 60,
+              height: 60,
+              pointerEvents: 'none',
+              backgroundColor: '#ffffffff',
+              color: 'black',
+              zIndex: 100,
+              opacity: 0.3
+            }}
+            >
+            {table.id.slice(0,-1).replace("-", " ")}
+            </button>
         </div>
       ))}
       {/* Wide Tables */}
@@ -285,8 +320,29 @@ const normalize = s =>
               clearSelectedTimes();
               openSidebar()}}
           >
-            {table.id.replace("-", " ")}
           </button>
+        </div>
+      ))}
+      {wideTableLabels.map(table => (
+        <div key={table.id.slice(0,-1)} className="table-group" id={table.id.slice(0,-1)}>
+          {/* Table Button Label */}
+          <button
+            className="table-button absolute"
+            style={{
+              position: 'absolute',
+              top: table.top,
+              left: table.left,
+              width: 115,
+              height: 60,
+              pointerEvents: 'none',
+              backgroundColor: '#ffffffff',
+              color: 'black',
+              zIndex: 100,
+              opacity: 0.3
+            }}
+            >
+            {table.id.slice(0,-1).replace("-", " ")}
+            </button>
         </div>
       ))}
       {/* Meeting Rooms */}
