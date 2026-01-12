@@ -32,9 +32,11 @@ export default function Floorplan() {
   ...chairs
 ];
 
+// Floorplan Image Dimensions 
 const baseWidth = 1080;
 const baseHeight = 629;
 
+// Table button Dimensions
 const tableLength = 60;
 const tableWidth = 60;
 const quadLength = tableLength / 2;
@@ -85,19 +87,20 @@ useEffect(() => {
     return slots;
   };
 
-const handleDateChange = (date) => {
+  const handleDateChange = (date) => {
     // Convert Date object to YYYY-MM-DD string for consistency
     const dateString = date ? date.toISOString().split('T')[0] : '';
     setSelectedDate(dateString);
     clearSelectedTimes();
   };
-function toDDMMYYYY(dateStr) {
-  const [yyyy, mm, dd] = dateStr.split('-');
-  return `${mm}/${dd}/${yyyy}`;
-}
-const normalize = s =>
-  s?.toLowerCase().replace(/[-\s]/g, "");
+  function toDDMMYYYY(dateStr) {
+    const [yyyy, mm, dd] = dateStr.split('-');
+    return `${mm}/${dd}/${yyyy}`;
+  }
+  const normalize = s =>
+    s?.toLowerCase().replace(/[-\s]/g, "");
 
+  // Load positions of table buttons
   useEffect(() => {
     fetch("./positions.json")
       .then(res => res.json())
@@ -111,6 +114,7 @@ const normalize = s =>
       .catch(err => console.error("Error loading positions.json:", err));
   }, []);
 
+  // Reterive all bookings from Google Sheets
   useEffect(() => {
     setLoadingBookings(true);
     fetch(webAppUrl+"?action=get&date="+toDDMMYYYY(selectedDate))
