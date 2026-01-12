@@ -240,7 +240,7 @@ const normalize = s =>
 
     <div className="floorplan-wrapper" style={{position: "relative"}}>
       {/* Floorplan image */}
-      <img src="./floorplan_plain3.png" alt="Floorplan" className="floorplan-img" />
+      <img src="./floorplan.png" alt="Floorplan" className="floorplan-img" />
 
       {/* Tables */}
       {tableWithBusyness.map(table => (
