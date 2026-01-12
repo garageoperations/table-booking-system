@@ -286,7 +286,7 @@ const normalize = s =>
               pointerEvents: 'none',
               backgroundColor: '#ffffffff',
               color: 'black',
-              zIndex: 100,
+              zIndex: 0,
               opacity: 0.3
             }}
             >
@@ -337,7 +337,7 @@ const normalize = s =>
               pointerEvents: 'none',
               backgroundColor: '#ffffffff',
               color: 'black',
-              zIndex: 100,
+              zIndex: 0,
               opacity: 0.3
             }}
             >
