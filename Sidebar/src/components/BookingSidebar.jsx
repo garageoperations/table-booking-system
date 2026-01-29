@@ -3,6 +3,9 @@ import { useState, useMemo } from 'react';
 import { FaChair, FaCalendarAlt, FaUser } from 'react-icons/fa';
 import { useSidebarStore } from '../lib/sidebarStore';
 
+const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+
+
 export default function BookingSidebar()  {
   const { isSidebarOpen, closeSidebar } = useSidebarStore();
   const { selectedSeat, selectedTable, bookingType, selectedDate, bookings, selectedTimes, setSelectedTimes, refreshKey, setRefreshKey } = useSidebarStore();
@@ -218,8 +221,21 @@ export default function BookingSidebar()  {
   const categories = ["Individual", "DIP", "FYP", "Flagship-Escendo", "Flagship-Enitio", "Flagship-IdeasJam", "Others"];
 
   return (
-    <div style={styles.container}>
+    <div style={styles.container} className='booking-sidebar'>
       <div style={styles.header}>
+        {/* Add this bar for mobile visual cue */}
+        {isMobile && (
+          <div style={{
+            width: '40px', 
+            height: '5px', 
+            backgroundColor: '#ccc', 
+            borderRadius: '5px', 
+            position: 'absolute', 
+            top: '8px', 
+            left: '50%', 
+            transform: 'translateX(-50%)' 
+          }} />
+        )}
         <span style={styles.headerTitle}>Booking</span>
         <button style={styles.closeButton} onClick={closeSidebar}>✖</button>
       </div>
@@ -358,17 +374,26 @@ export default function BookingSidebar()  {
 // Updated Styles - Sidebar on Right
 const styles = {
   container: {
-    width: '380px',
-    height: '100vh',
+    width: isMobile ? '100%' : '380px',
+    height: isMobile ? '80vh' : '100vh', // Take up 80% of screen on mobile
     backgroundColor: '#f8f9fa',
-    borderLeft: '1px solid #dee2e6',
+    borderLeft: isMobile ? 'none' : '1px solid #dee2e6',
+    borderTop: isMobile ? '2px solid #dee2e6' : 'none',
     display: 'flex',
     flexDirection: 'column',
     fontFamily: 'Arial, sans-serif',
     position: 'fixed',
+    
+    // Switch between right-aligned and bottom-aligned
     right: 0,
-    top: 0,
-    overflowY: 'auto'
+    bottom: 0,
+    top: isMobile ? 'auto' : 0, 
+    
+    zIndex: 1000,
+    overflowY: 'auto',
+    transition: 'transform 0.3s ease-in-out',
+    borderTopLeftRadius: isMobile ? '20px' : '0',
+    borderTopRightRadius: isMobile ? '20px' : '0',
   },
   tabs: {
     display: 'flex',

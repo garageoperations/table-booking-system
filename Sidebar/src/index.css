@@ -248,3 +248,25 @@ button:focus-visible {
   font-weight: 600;
   color: black;
 }
+
+@media (max-width: 768px) {
+  .booking-sidebar {
+    width: 100% !important;
+    height: 85vh !important;
+    top: auto !important;
+    bottom: 0 !important;
+    right: 0 !important;
+    border-left: none !important;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
+    /* Animation for sliding up */
+    animation: slideUp 0.3s ease-out;
+  }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+
