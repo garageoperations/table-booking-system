@@ -330,8 +330,8 @@ return (
             <button
               className="table-btn absolute"
               style={{
-                left: style.left, 
-                top: style.top,   
+                left: table.left+14, 
+                top: table.top+17,   
                 width: '30px',
                 height: '30px',             
                 background: getHeatmapColor(table.busyness),
@@ -366,8 +366,8 @@ return (
             className="table-button absolute"
             style={{
               position:'absolute',
-              top: styles.top,
-              left: styles.left,
+              top: table.top,
+              left: table.left,
               width: 60,
               height: 60,
               pointerEvents: 'none',
@@ -390,8 +390,8 @@ return (
           <button
             className="wide-table-btn absolute"
             style={{
-              top: styles.top,
-              left: styles.left,
+              top: table.top,
+              left: table.left,
               background: getHeatmapColor(table.busyness),  // 🔥 heatmap
               transition: "background 0.3s ease",
               position: "absolute"
@@ -424,8 +424,8 @@ return (
             className="table-button absolute"
             style={{
               position: 'absolute',
-              top: styles.top,
-              left: styles.left,
+              top: table.top,
+              left: table.left,
               width: 115,
               height: 60,
               pointerEvents: 'none',
@@ -488,8 +488,8 @@ return (
             className="chair-btn"
             style={{
               position: 'absolute',
-              left: style.left,
-              top: style.top,
+              left: chair.left+layout.chair.left,
+              top: chair.top+layout.chair.top,
               background: getHeatmapColor(chair.busyness),
               transition: "background 0.3s ease"
             }}
