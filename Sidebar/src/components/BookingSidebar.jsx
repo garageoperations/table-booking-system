@@ -30,6 +30,42 @@ export default function BookingSidebar()  {
     return slots;
   };
 
+  // Helper: Check if a slot is in the past
+  const isSlotExpired = (timeSlot) => {
+    if (!selectedDate) return false;
+
+    const now = new Date();
+    const selected = new Date(selectedDate);
+
+    // 1. Compare Dates (Day/Month/Year only)
+    const todayZero = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const selectedZero = new Date(selected.getFullYear(), selected.getMonth(), selected.getDate());
+
+    // If selected date is in the past (yesterday etc), expire all slots
+    if (selectedZero < todayZero) return true;
+    
+    // If selected date is in the future, don't expire anything
+    if (selectedZero > todayZero) return false;
+
+    // 2. Compare Time (Only if it's today)
+    const [slotHour, slotMinute] = timeSlot.split(':').map(Number);
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+
+    // Convert everything to minutes for easy comparison
+    const currentTotalMinutes = currentHour * 60 + currentMinute;
+    
+    // Logic: A slot expires if NOW is past the slot's END time (Start + 30m)
+    // Ex: Slot 14:00 (Ends 14:30). Now is 14:40. 
+    // 14:40 > 14:30 -> Expired (True)
+    
+    // Ex: Slot 14:30 (Ends 15:00). Now is 14:40.
+    // 14:40 < 15:00 -> Not Expired (False)
+    const slotEndMinutes = (slotHour * 60) + slotMinute + 30;
+
+    return currentTotalMinutes >= slotEndMinutes;
+  };
+
   const formatDate = (dateString) => {
     if (!dateString) return 'Any Date';
     const date = new Date(dateString);
@@ -251,17 +287,20 @@ export default function BookingSidebar()  {
                 {generateTimeSlots().map(time => {
                   const isSelected = selectedTimes.includes(time);
                   const isBooked = bookedSlots.has(time);
+                  const isExpired = isSlotExpired(time);
+
+                  const isDisabled = isExpired || isBooked;
                   return (
                     <button 
                       key={time} 
-                      disabled={isBooked}
+                      disabled={isExpired}
                       style={{
                         ...styles.timeButton,
                         ...(isSelected?styles.selectedTime:{}),
-                        ...(isBooked?styles.disabledTime:{})
+                        ...(isDisabled?styles.disabledTime:{})
                       }}
                       onClick={() => {
-                        if (isBooked) return;
+                        if (isDisabled) return;
                         if (isSelected) setSelectedTimes(selectedTimes.filter(t=>t!==time));
                         else {
                           const newSel = [...selectedTimes,time].sort();

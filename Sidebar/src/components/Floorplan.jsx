@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
 import DatePicker from "react-datepicker"; 
 import "react-datepicker/dist/react-datepicker.css"; 
 import { useSidebarStore } from "../lib/sidebarStore";
@@ -32,6 +32,10 @@ export default function Floorplan() {
   ...chairs
 ];
 
+// 1. Calculate the available space and scale factor
+const [fitScale, setFitScale] = useState(1);
+const containerRef = useRef(null);
+
 // Floorplan Image Dimensions 
 const baseWidth = 1080;
 const baseHeight = 629;
@@ -39,11 +43,17 @@ const baseHeight = 629;
 // Table button Dimensions
 const tableLength = 60;
 const tableWidth = 60;
-const quadLength = tableLength / 2;
-const quadWidth = tableWidth / 2;
-const quadrents = ['A', 'B', 'C', 'D']
 
 const webAppUrl = "https://script.google.com/macros/s/AKfycbwNuv7HbV_IazA8YAQjx4xsvKIezsqy-_qQleGkOLhikqh_oGyVJP8wZCKqUkE_s8M8Og/exec"
+
+const scrollRef = useRef(null);
+
+useLayoutEffect(() => {
+  if (scrollRef.current) {
+    scrollRef.current.scrollLeft = 0;
+    scrollRef.current.scrollTop = 0;
+  }
+}, []);
 
 useEffect(() => {
   if (!imgRef.current) return;
@@ -61,6 +71,28 @@ useEffect(() => {
   window.addEventListener("resize", updateScale);
 
   return () => window.removeEventListener("resize", updateScale);
+}, []);
+
+useEffect(() => {
+  const handleResize = () => {
+    if (containerRef.current) {
+      // Get the available width and height of the container div
+      const { width, height } = containerRef.current.getBoundingClientRect();
+      
+      // Calculate ratios
+      const scaleX = width / baseWidth;
+      const scaleY = height / baseHeight;
+      
+      // Use the smaller scale factor to ensure it fits BOTH dimensions
+      // Multiply by 0.95 to add a small 5% buffer/margin
+      setFitScale(Math.min(scaleX, scaleY) * 0.95);
+    }
+  };
+
+  window.addEventListener('resize', handleResize);
+  handleResize(); // Initial call
+  
+  return () => window.removeEventListener('resize', handleResize);
 }, []);
 
 
@@ -99,6 +131,11 @@ useEffect(() => {
   }
   const normalize = s =>
     s?.toLowerCase().replace(/[-\s]/g, "");
+
+  const getPos = (x, y) => ({
+  left: `${(x / baseWidth) * 100}%`,
+  top: `${(y / baseHeight) * 100}%`
+});
 
   // Load positions of table buttons
   useEffect(() => {
@@ -222,42 +259,82 @@ useEffect(() => {
 
   if (!layout) return <div>Loading floorplan...</div>;
 
-  return (
-  <div className="date-picker-container mb-4 relative">
-    <label className="block text-sm font-medium text-gray-700 mb-1">
-
-    {/* Select date */}
-    Select Date:
-    </label>
-    <div className="relative">
-      <DatePicker
-        selected={selectedDate}
-        onChange={handleDateChange}
-        minDate={today}
-        dateFormat="EEEE, MMMM d, yyyy" // 👈 More reliable format
-        className="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-        popperClassName="z-50"
-        popperPlacement="bottom-start"
-        placeholderText="Select a date"
-      />
+return (
+  <div style={{ 
+    height: '100vh', 
+    display: 'flex', 
+    flexDirection: 'column',
+    overflow: 'hidden' // Prevent the whole page from scrolling, we only want the map to scroll
+  }}>
+    
+    {/* --- 1. Fixed Header Section --- */}
+    <div className="p-4 bg-white shadow-sm z-10 relative">
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        Select Date:
+      </label>
+      <div className="relative max-w-xs"> 
+        <DatePicker
+          selected={selectedDate}
+          onChange={handleDateChange}
+          minDate={today}
+          dateFormat="EEEE, MMMM d, yyyy"
+          className="px-3 py-2 border border-gray-300 rounded-md shadow-sm w-full"
+        />
+      </div>
     </div>
 
-    <div className="floorplan-wrapper" style={{position: "relative"}}>
-      {/* Floorplan image */}
-      <img src="./floorplan.png" alt="Floorplan" className="floorplan-img" />
+    {/* --- 2. Scrollable Map Container --- */}
+    <div
+    ref={scrollRef} 
+    style={{ 
+      flex: 1,            // Take remaining height
+      overflow: 'auto',   // 🪄 Enable X and Y scrolling
+      position: 'relative',
+      background: 'transparent', 
+      cursor: 'grab',      // visual cue
+      display: "flex",
+      justifyContent: "flex-start",
+      alignItems: 'flex-start',
+      textAlign: 'left'
+    }}>
+      
+      {/* --- 3. Fixed Size Wrapper (The "Canvas") --- */}
+      <div style={{ 
+        position: 'relative',
+        minWidth: '1080px',  // 🔒 HARDCODED: Matches your image width
+        height: '629px',  // 🔒 HARDCODED: Matches your image height
+        margin: 0
+      }}>
+        
+        {/* Background Image */}
+        <img 
+          src="./floorplan.png" 
+          alt="Floorplan" 
+          style={{ 
+            width: '1080px', 
+            height: '629px', 
+            display: 'block',
+            pointerEvents: 'none' // Prevents dragging the image ghost
+          }} 
+        />
 
       {/* Tables */}
-      {tableWithBusyness.map(table => (
-        <div key={table.id} className="table-group" id={table.id}>
-          {/* Table Button */}
-          <button
-            className="table-btn absolute"
-            style={{
-              top: table.top,
-              left: table.left,
-              background: getHeatmapColor(table.busyness),  // 🔥 heatmap
-              transition: "background 0.3s ease"
-            }}
+      {tableWithBusyness.map(table => {
+        const style = getPos(table.left+14, table.top+17); // Lets not talk about this
+  
+        return (
+          <div key={table.id} className="table-group" id={table.id}>
+            <button
+              className="table-btn absolute"
+              style={{
+                left: style.left, 
+                top: style.top,   
+                width: '30px',
+                height: '30px',             
+                background: getHeatmapColor(table.busyness),
+                transform: 'translate(-50%, -50%)', // Optional: Centers the button on the coordinate
+                position:'absolute'
+              }}
             onMouseEnter={(e) => {
               setHoverInfo({ type: "table", data: table });
               setMousePos({ x: e.clientX, y: e.clientY });
@@ -275,16 +352,19 @@ useEffect(() => {
           >
           </button>
         </div>
-      ))}
-      {tableLabels.map(table => (
+        );
+      })}
+      {tableLabels.map(table => {
+        const styles = getPos(table.left, table.top);
+        return (
         <div key={table.id.slice(0,-1)} className="table-group" id={table.id.slice(0,-1)}>
           {/* Table Button Label */}
           <button
             className="table-button absolute"
             style={{
-              position: 'absolute',
-              top: table.top,
-              left: table.left,
+              position:'absolute',
+              top: styles.top,
+              left: styles.left,
               width: 60,
               height: 60,
               pointerEvents: 'none',
@@ -297,17 +377,21 @@ useEffect(() => {
             {table.id.slice(0,-1).replace("-", " ")}
             </button>
         </div>
-      ))}
+        );
+})}
       {/* Wide Tables */}
-      {wideTablesWithBusyness.map(table => (
+      {wideTablesWithBusyness.map(table => {
+        const styles = getPos(table.left, table.top);
+        return(
         <div key={table.id} className="table-group" id={table.id}>
           <button
             className="wide-table-btn absolute"
             style={{
-              top: table.top,
-              left: table.left,
+              top: styles.top,
+              left: styles.left,
               background: getHeatmapColor(table.busyness),  // 🔥 heatmap
-              transition: "background 0.3s ease"
+              transition: "background 0.3s ease",
+              position: "absolute"
             }}
             onMouseEnter={(e) => {
               setHoverInfo({ type: "wideTable", data: table });
@@ -326,16 +410,19 @@ useEffect(() => {
           >
           </button>
         </div>
-      ))}
-      {wideTableLabels.map(table => (
+        );
+        })}
+      {wideTableLabels.map(table => {
+        const styles = getPos(table.left, table.top);
+        return (
         <div key={table.id.slice(0,-1)} className="table-group" id={table.id.slice(0,-1)}>
           {/* Table Button Label */}
           <button
             className="table-button absolute"
             style={{
               position: 'absolute',
-              top: table.top,
-              left: table.left,
+              top: styles.top,
+              left: styles.left,
               width: 115,
               height: 60,
               pointerEvents: 'none',
@@ -348,9 +435,12 @@ useEffect(() => {
             {table.id.slice(0,-1).replace("-", " ")}
             </button>
         </div>
-      ))}
+        );
+      })}
       {/* Meeting Rooms */}
-      {roomsWithBusyness.map(room => (
+      {roomsWithBusyness.map(room => {
+        const styles = getPos(room.left, room.top);
+        return (
         <div key={room.id} className="table-group" id={room.id}>
           <button
             className="room-btn absolute"
@@ -378,37 +468,47 @@ useEffect(() => {
             {room.id.replace("-", " ")}
           </button>
         </div>
-      ))}
+        );
+      })}
       <div className="chair-group">
       {/* Single Chair Buttons */}
-      {chairsWithBusyness.map((chair, i) => (
-      <button
-        key={i}
-        className="chair-btn"
-        style={{
-          top: chair.top + layout.chair.top,
-          left: chair.left + layout.chair.left,
-          background: getHeatmapColor(chair.busyness),
-          transition: "background 0.3s ease"
-        }}
-        onMouseEnter={(e) => {
-              setHoverInfo({ type: "chair", data: chair });
-              setMousePos({ x: e.clientX, y: e.clientY });
+      {chairsWithBusyness.map((chair, i) => {
+        // 1. Calculate absolute pixel position first
+        const absLeft = chair.left + layout.chair.left;
+        const absTop = chair.top + layout.chair.top;
+
+        // 2. Convert total to percentage
+        const style = getPos(absLeft, absTop);
+        return (
+          <button
+            key={i}
+            className="chair-btn"
+            style={{
+              position: 'absolute',
+              left: style.left,
+              top: style.top,
+              background: getHeatmapColor(chair.busyness),
+              transition: "background 0.3s ease"
             }}
-            onMouseMove={(e) => {
-              setMousePos({ x: e.clientX, y: e.clientY });
+            onMouseEnter={(e) => {
+                  setHoverInfo({ type: "chair", data: chair });
+                  setMousePos({ x: e.clientX, y: e.clientY });
+                }}
+                onMouseMove={(e) => {
+                  setMousePos({ x: e.clientX, y: e.clientY });
+                }}
+                onMouseLeave={() => setHoverInfo(null)}
+            onClick={() => {
+              setBookingType("Chair");
+              setSelectedSeat("Chair " + (i+1));
+              setSelectedTable(null);
+              clearSelectedTimes();
+              openSidebar();
             }}
-            onMouseLeave={() => setHoverInfo(null)}
-        onClick={() => {
-          setBookingType("Chair");
-          setSelectedSeat("Chair " + (i+1));
-          setSelectedTable(null);
-          clearSelectedTimes();
-          openSidebar();
-        }}
-      >
-              </button>
-    ))}
+          >
+          </button>
+        );
+      })}
     {hoverInfo && (
       <div
         style={{
@@ -426,6 +526,7 @@ useEffect(() => {
         <HoverBubbleContent hoverInfo={hoverInfo} />
       </div>
     )}
+    </div>
     </div>
     </div>
     </div>
