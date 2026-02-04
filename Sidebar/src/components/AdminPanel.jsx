@@ -169,8 +169,8 @@ export default function AdminPanel() {
 }
 
 const styles = {
-  adminContainer: { padding: '20px', height: '100vh', boxSizing: 'border-box', overflow: 'hidden' },
-  tableWrapper: { maxHeight: '70vh', overflowY: 'auto', border: '1px solid #ddd', overflowX: 'hidden'},
+  adminContainer: { padding: '20px', height: '100vh', width: '100vw', boxSizing: 'border-box', overflow: 'hidden' },
+  tableWrapper: { maxHeight: '70vh', overflowY: 'auto', border: '1px solid #ddd', overflowX: 'auto'},
   adminHeader: { display: 'flex', justifyContent: 'space-between', marginBottom: '20px' },
   refreshBtn: { padding: '8px 12px', cursor: 'pointer' },
   filterBar: { display: 'flex', gap: '10px', marginBottom: '20px' },

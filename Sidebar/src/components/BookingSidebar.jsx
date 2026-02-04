@@ -3,6 +3,9 @@ import { useState, useMemo } from 'react';
 import { FaChair, FaCalendarAlt, FaUser } from 'react-icons/fa';
 import { useSidebarStore } from '../lib/sidebarStore';
 
+const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+
+
 export default function BookingSidebar()  {
   const { isSidebarOpen, closeSidebar } = useSidebarStore();
   const { selectedSeat, selectedTable, bookingType, selectedDate, bookings, selectedTimes, setSelectedTimes, refreshKey, setRefreshKey } = useSidebarStore();
@@ -25,6 +28,42 @@ export default function BookingSidebar()  {
       }
     }
     return slots;
+  };
+
+  // Helper: Check if a slot is in the past
+  const isSlotExpired = (timeSlot) => {
+    if (!selectedDate) return false;
+
+    const now = new Date();
+    const selected = new Date(selectedDate);
+
+    // 1. Compare Dates (Day/Month/Year only)
+    const todayZero = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const selectedZero = new Date(selected.getFullYear(), selected.getMonth(), selected.getDate());
+
+    // If selected date is in the past (yesterday etc), expire all slots
+    if (selectedZero < todayZero) return true;
+    
+    // If selected date is in the future, don't expire anything
+    if (selectedZero > todayZero) return false;
+
+    // 2. Compare Time (Only if it's today)
+    const [slotHour, slotMinute] = timeSlot.split(':').map(Number);
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+
+    // Convert everything to minutes for easy comparison
+    const currentTotalMinutes = currentHour * 60 + currentMinute;
+    
+    // Logic: A slot expires if NOW is past the slot's END time (Start + 30m)
+    // Ex: Slot 14:00 (Ends 14:30). Now is 14:40. 
+    // 14:40 > 14:30 -> Expired (True)
+    
+    // Ex: Slot 14:30 (Ends 15:00). Now is 14:40.
+    // 14:40 < 15:00 -> Not Expired (False)
+    const slotEndMinutes = (slotHour * 60) + slotMinute + 30;
+
+    return currentTotalMinutes >= slotEndMinutes;
   };
 
   const formatDate = (dateString) => {
@@ -218,7 +257,7 @@ export default function BookingSidebar()  {
   const categories = ["Individual", "DIP", "FYP", "Flagship-Escendo", "Flagship-Enitio", "Flagship-IdeasJam", "Others"];
 
   return (
-    <div style={styles.container}>
+    <div style={styles.container} className='booking-sidebar'>
       <div style={styles.header}>
         <span style={styles.headerTitle}>Booking</span>
         <button style={styles.closeButton} onClick={closeSidebar}>✖</button>
@@ -235,17 +274,20 @@ export default function BookingSidebar()  {
                 {generateTimeSlots().map(time => {
                   const isSelected = selectedTimes.includes(time);
                   const isBooked = bookedSlots.has(time);
+                  const isExpired = isSlotExpired(time);
+
+                  const isDisabled = isExpired || isBooked;
                   return (
                     <button 
                       key={time} 
-                      disabled={isBooked}
+                      disabled={isExpired}
                       style={{
                         ...styles.timeButton,
                         ...(isSelected?styles.selectedTime:{}),
-                        ...(isBooked?styles.disabledTime:{})
+                        ...(isDisabled?styles.disabledTime:{})
                       }}
                       onClick={() => {
-                        if (isBooked) return;
+                        if (isDisabled) return;
                         if (isSelected) setSelectedTimes(selectedTimes.filter(t=>t!==time));
                         else {
                           const newSel = [...selectedTimes,time].sort();
@@ -358,17 +400,26 @@ export default function BookingSidebar()  {
 // Updated Styles - Sidebar on Right
 const styles = {
   container: {
-    width: '380px',
-    height: '100vh',
+    width: isMobile ? '100%' : '380px',
+    height: isMobile ? '80vh' : '100vh', // Take up 80% of screen on mobile
     backgroundColor: '#f8f9fa',
-    borderLeft: '1px solid #dee2e6',
+    borderLeft: isMobile ? 'none' : '1px solid #dee2e6',
+    borderTop: isMobile ? '2px solid #dee2e6' : 'none',
     display: 'flex',
     flexDirection: 'column',
     fontFamily: 'Arial, sans-serif',
     position: 'fixed',
+    
+    // Switch between right-aligned and bottom-aligned
     right: 0,
-    top: 0,
-    overflowY: 'auto'
+    bottom: 0,
+    top: isMobile ? 'auto' : 0, 
+    
+    zIndex: 1000,
+    overflowY: 'auto',
+    transition: 'transform 0.3s ease-in-out',
+    borderTopLeftRadius: isMobile ? '20px' : '0',
+    borderTopRightRadius: isMobile ? '20px' : '0',
   },
   tabs: {
     display: 'flex',
@@ -396,7 +447,7 @@ const styles = {
   content: {
     flex: 1,
     padding: '1.5rem',
-    overflowY: 'hidden',
+    overflowY: 'auto',
     display: 'flex',
     flexDirection: 'column'
   },
