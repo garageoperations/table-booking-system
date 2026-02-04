@@ -259,19 +259,6 @@ export default function BookingSidebar()  {
   return (
     <div style={styles.container} className='booking-sidebar'>
       <div style={styles.header}>
-        {/* Add this bar for mobile visual cue */}
-        {isMobile && (
-          <div style={{
-            width: '40px', 
-            height: '5px', 
-            backgroundColor: '#ccc', 
-            borderRadius: '5px', 
-            position: 'absolute', 
-            top: '8px', 
-            left: '50%', 
-            transform: 'translateX(-50%)' 
-          }} />
-        )}
         <span style={styles.headerTitle}>Booking</span>
         <button style={styles.closeButton} onClick={closeSidebar}>✖</button>
       </div>
@@ -460,7 +447,7 @@ const styles = {
   content: {
     flex: 1,
     padding: '1.5rem',
-    overflowY: 'hidden',
+    overflowY: 'auto',
     display: 'flex',
     flexDirection: 'column'
   },

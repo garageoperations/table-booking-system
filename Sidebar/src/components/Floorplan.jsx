@@ -262,6 +262,7 @@ useEffect(() => {
 return (
   <div style={{ 
     height: '100vh', 
+    width: '100vw',
     display: 'flex', 
     flexDirection: 'column',
     overflow: 'hidden' // Prevent the whole page from scrolling, we only want the map to scroll
@@ -292,7 +293,7 @@ return (
       position: 'relative',
       background: 'transparent', 
       cursor: 'grab',      // visual cue
-      display: "flex",
+      display: "block",
       justifyContent: "flex-start",
       alignItems: 'flex-start',
       textAlign: 'left'
@@ -303,7 +304,9 @@ return (
         position: 'relative',
         minWidth: '1080px',  // 🔒 HARDCODED: Matches your image width
         height: '629px',  // 🔒 HARDCODED: Matches your image height
-        margin: 0
+        marginLeft: 0, 
+        marginRight: 0,
+        padding: 0
       }}>
         
         {/* Background Image */}
