@@ -4,6 +4,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useSidebarStore } from "../lib/sidebarStore";
 
 const today = new Date();
+const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
 
 export default function Floorplan() {
   const [tables, setTables] = useState([]);
@@ -376,7 +377,7 @@ return (
               display: 'flex',        // Uses flexbox to perfectly center the text
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '0.8cqw'      // Optional: Container Query Units (scales font with container)
+              fontSize: '1.5cqw'      // Optional: Container Query Units (scales font with container)
             }}
             >
             {table.id.slice(0,-1).replace("-", " ")}
@@ -445,7 +446,7 @@ return (
               display: 'flex',        // Uses flexbox to perfectly center the text
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '0.8cqw'      // Optional: Container Query Units (scales font with container)
+              fontSize: '1.5cqw'      // Optional: Container Query Units (scales font with container)
             }}
             >
             {table.id.slice(0,-1).replace("-", " ")}
@@ -473,7 +474,7 @@ return (
               display: 'flex',        // Uses flexbox to perfectly center the text
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '0.8cqw'      // Optional: Container Query Units (scales font with container)
+              fontSize: '1.5cqw'      // Optional: Container Query Units (scales font with container)
             }}
             onMouseEnter={(e) => {
               if (window.matchMedia("(hover: hover)").matches) {
@@ -559,6 +560,19 @@ return (
     )}
     </div>
     </div>
+    {isMobile && 
+      <div
+        style={{
+          padding: '2%',
+          position: 'absolute',
+          top: '426px',
+          left: '200px',
+          color: 'black',
+          fontSize: 'x-large'
+        }}>
+        Scroll to the right to view more →
+        </div>
+    }
     </div>
     </div>
   );
