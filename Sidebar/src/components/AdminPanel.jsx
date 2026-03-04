@@ -154,7 +154,7 @@ export default function AdminPanel() {
                     {isEditing ? (
                       <><button onClick={() => handleSave(booking.rowId)} style={styles.saveBtn}>Save</button><button onClick={() => setEditingRow(null)} style={styles.cancelBtn}>Cancel</button></>
                     ) : (
-                      <><button onClick={() => startEdit(booking)} style={styles.editBtn}>Edit</button><button onClick={() => handleDelete(booking.rowId, booking.name)} style={styles.deleteBtn}>Delete</button></>
+                      <><button onClick={() => startEdit(booking)} style={styles.editBtn}>Edit</button><button onClick={() => handleDelete(booking.rowId, booking.name)} style={styles.deleteBtn}>REJECT BOOKING</button></>
                     )}
                   </td>
                 </tr>

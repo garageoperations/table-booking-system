@@ -300,14 +300,7 @@ return (
     }}>
       
       {/* --- 3. Responsive Wrapper (The "Canvas") --- */}
-      <div style={{ 
-        position: 'relative',
-        width: '100%',              // Allow it to fill the container
-        maxWidth: '1080px',         // Optional: cap the maximum size
-        aspectRatio: '1080 / 629',  // Keeps the exact proportions of your image
-        margin: '0 auto',           // Centers the map
-        padding: 0
-      }}>
+      <div className="responsive-canvas">
         
         {/* Background Image */}
         <img 

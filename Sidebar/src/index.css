@@ -269,4 +269,28 @@ button:focus-visible {
   to { transform: translateY(0); }
 }
 
+/* --- Base Styles for Desktop (Landscape / Wide Screens) --- */
+.responsive-canvas {
+  position: relative;
+  aspect-ratio: 1080 / 629;
+  margin: 0 auto;
+  padding: 0;
+  container-type: inline-size;
+  container-name: floorplan;
+  
+  /* Fits the map nicely on the screen */
+  width: 100%;
+  max-width: 1080px;
+}
+
+/* --- Overrides for Mobile (Portrait / Tall Screens) --- */
+@media (max-aspect-ratio: 1/1), (max-width: 768px) {
+  .responsive-canvas {
+    /* Forces the map to fill the height, creating horizontal scroll */
+    min-width: 100%;
+    min-height: 100%;
+    width: auto; 
+    max-width: none; 
+  }
+}
 
