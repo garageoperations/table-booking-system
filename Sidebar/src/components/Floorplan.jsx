@@ -299,13 +299,13 @@ return (
       textAlign: 'left'
     }}>
       
-      {/* --- 3. Fixed Size Wrapper (The "Canvas") --- */}
+      {/* --- 3. Responsive Wrapper (The "Canvas") --- */}
       <div style={{ 
         position: 'relative',
-        minWidth: '1080px',  // 🔒 HARDCODED: Matches your image width
-        height: '629px',  // 🔒 HARDCODED: Matches your image height
-        marginLeft: 0, 
-        marginRight: 0,
+        width: '100%',              // Allow it to fill the container
+        maxWidth: '1080px',         // Optional: cap the maximum size
+        aspectRatio: '1080 / 629',  // Keeps the exact proportions of your image
+        margin: '0 auto',           // Centers the map
         padding: 0
       }}>
         
@@ -314,33 +314,35 @@ return (
           src="./floorplan.png" 
           alt="Floorplan" 
           style={{ 
-            width: '1080px', 
-            height: '629px', 
+            width: '100%',          // Scale image to fill the wrapper width
+            height: '100%',         // Scale image to fill the wrapper height
             display: 'block',
-            pointerEvents: 'none' // Prevents dragging the image ghost
+            pointerEvents: 'none'
           }} 
         />
 
       {/* Tables */}
       {tableWithBusyness.map(table => {
-        const style = getPos(table.left+14, table.top+17); // Lets not talk about this
+        const {left, top} = getPos(table.left+14, table.top+17); // Lets not talk about this
   
         return (
           <div key={table.id} className="table-group" id={table.id}>
             <button
               className="table-btn absolute"
               style={{
-                left: table.left+14, 
-                top: table.top+17,   
-                width: '30px',
-                height: '30px',             
+                left: left, 
+                top: top,   
+                width: `${(30 / baseWidth) * 100}%`,
+                height: `${(30 / baseHeight) * 100}%`,             
                 background: getHeatmapColor(table.busyness),
                 transform: 'translate(-50%, -50%)', // Optional: Centers the button on the coordinate
                 position:'absolute'
               }}
             onMouseEnter={(e) => {
+              if (window.matchMedia("(hover: hover)").matches) {
               setHoverInfo({ type: "table", data: table });
               setMousePos({ x: e.clientX, y: e.clientY });
+              }
             }}
             onMouseMove={(e) => {
               setMousePos({ x: e.clientX, y: e.clientY });
@@ -358,7 +360,7 @@ return (
         );
       })}
       {tableLabels.map(table => {
-        const styles = getPos(table.left, table.top);
+        const {left,top} = getPos(table.left, table.top);
         return (
         <div key={table.id.slice(0,-1)} className="table-group" id={table.id.slice(0,-1)}>
           {/* Table Button Label */}
@@ -366,15 +368,22 @@ return (
             className="table-button absolute"
             style={{
               position:'absolute',
-              top: table.top,
-              left: table.left,
-              width: 60,
-              height: 60,
+              top: top,
+              left: left,
+              width: `${(60 / baseWidth) * 100}%`,
+              height: `${(60 / baseHeight) * 100}%`,
               pointerEvents: 'none',
               backgroundColor: '#ffffffff',
               color: 'black',
               zIndex: 0,
-              opacity: 0.3
+              opacity: 0.3,
+
+              padding: 0,             // Removes default browser button padding
+              overflow: 'hidden',     // Hides text if it gets too cramped
+              display: 'flex',        // Uses flexbox to perfectly center the text
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '0.8cqw'      // Optional: Container Query Units (scales font with container)
             }}
             >
             {table.id.slice(0,-1).replace("-", " ")}
@@ -384,21 +393,25 @@ return (
 })}
       {/* Wide Tables */}
       {wideTablesWithBusyness.map(table => {
-        const styles = getPos(table.left, table.top);
+        const {left,top} = getPos(table.left, table.top);
         return(
         <div key={table.id} className="table-group" id={table.id}>
           <button
             className="wide-table-btn absolute"
             style={{
-              top: table.top,
-              left: table.left,
+              top: top,
+              left: left,
+              width: `${(57 / baseWidth) * 100}%`,
+              height: `${(30 / baseHeight) * 100}%`,
               background: getHeatmapColor(table.busyness),  // 🔥 heatmap
               transition: "background 0.3s ease",
               position: "absolute"
             }}
             onMouseEnter={(e) => {
-              setHoverInfo({ type: "wideTable", data: table });
-              setMousePos({ x: e.clientX, y: e.clientY });
+              if (window.matchMedia("(hover: hover)").matches) {
+                setHoverInfo({ type: "wideTable", data: table });
+                setMousePos({ x: e.clientX, y: e.clientY });
+              }
             }}
             onMouseMove={(e) => {
               setMousePos({ x: e.clientX, y: e.clientY });
@@ -416,7 +429,7 @@ return (
         );
         })}
       {wideTableLabels.map(table => {
-        const styles = getPos(table.left, table.top);
+        const {left,top} = getPos(table.left, table.top);
         return (
         <div key={table.id.slice(0,-1)} className="table-group" id={table.id.slice(0,-1)}>
           {/* Table Button Label */}
@@ -424,15 +437,22 @@ return (
             className="table-button absolute"
             style={{
               position: 'absolute',
-              top: table.top,
-              left: table.left,
-              width: 115,
-              height: 60,
+              top: top,
+              left: left,
+              width: `${(115 / baseWidth) * 100}%`,
+              height: `${(60 / baseHeight) * 100}%`,
               pointerEvents: 'none',
               backgroundColor: '#ffffffff',
               color: 'black',
               zIndex: 0,
-              opacity: 0.3
+              opacity: 0.3,
+
+              padding: 0,             // Removes default browser button padding
+              overflow: 'hidden',     // Hides text if it gets too cramped
+              display: 'flex',        // Uses flexbox to perfectly center the text
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '0.8cqw'      // Optional: Container Query Units (scales font with container)
             }}
             >
             {table.id.slice(0,-1).replace("-", " ")}
@@ -442,20 +462,31 @@ return (
       })}
       {/* Meeting Rooms */}
       {roomsWithBusyness.map(room => {
-        const styles = getPos(room.left, room.top);
+        const {left, top} = getPos(room.left, room.top);
         return (
         <div key={room.id} className="table-group" id={room.id}>
           <button
             className="room-btn absolute"
             style={{
-              top: room.top,
-              left: room.left,
+              top: top,
+              left: left,
+              width: `${(87 / baseWidth) * 100}%`,
+              height: `${(87 / baseHeight) * 100}%`,
               background: getHeatmapColor(room.busyness),  // 🔥 heatmap
-              transition: "background 0.3s ease"
+              transition: "background 0.3s ease",
+
+              padding: 0,             // Removes default browser button padding
+              overflow: 'hidden',     // Hides text if it gets too cramped
+              display: 'flex',        // Uses flexbox to perfectly center the text
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '0.8cqw'      // Optional: Container Query Units (scales font with container)
             }}
             onMouseEnter={(e) => {
-              setHoverInfo({ type: "room", data: room });
-              setMousePos({ x: e.clientX, y: e.clientY });
+              if (window.matchMedia("(hover: hover)").matches) {
+                setHoverInfo({ type: "room", data: room });
+                setMousePos({ x: e.clientX, y: e.clientY });
+              }
             }}
             onMouseMove={(e) => {
               setMousePos({ x: e.clientX, y: e.clientY });
@@ -481,21 +512,25 @@ return (
         const absTop = chair.top + layout.chair.top;
 
         // 2. Convert total to percentage
-        const style = getPos(absLeft, absTop);
+        const {left, top} = getPos(absLeft, absTop);
         return (
           <button
             key={i}
             className="chair-btn"
             style={{
               position: 'absolute',
-              left: chair.left+layout.chair.left,
-              top: chair.top+layout.chair.top,
+              left: left,
+              top: top,
+              width: `${(26 / baseWidth) * 100}%`,
+              height: `${(26 / baseHeight) * 100}%`,
               background: getHeatmapColor(chair.busyness),
               transition: "background 0.3s ease"
             }}
             onMouseEnter={(e) => {
+              if (window.matchMedia("(hover: hover)").matches) {
                   setHoverInfo({ type: "chair", data: chair });
                   setMousePos({ x: e.clientX, y: e.clientY });
+              }
                 }}
                 onMouseMove={(e) => {
                   setMousePos({ x: e.clientX, y: e.clientY });

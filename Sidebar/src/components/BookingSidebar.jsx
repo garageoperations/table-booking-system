@@ -212,7 +212,7 @@ export default function BookingSidebar()  {
       name: formData.name,
       telegram: formData.telegram,
       email: formData.email,
-      reason: formData.reason === 'others' ? formData.customReason : formData.reason,
+      reason: (formData.reason === 'others' || bookingType === 'Room') ? formData.customReason : formData.reason,
       dateCreated: toDDMMYYYYhhmm(new Date())
     };
 
