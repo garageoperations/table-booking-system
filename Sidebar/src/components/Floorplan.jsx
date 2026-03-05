@@ -565,10 +565,13 @@ return (
         style={{
           padding: '2%',
           position: 'absolute',
-          top: '426px',
-          left: '200px',
+          top: `${(426/baseHeight) * 100}%`,
+          left: `${(200/baseWidth) * 100}%`,
           color: 'black',
-          fontSize: 'x-large'
+          fontSize: '5cqw', 
+          fontWeight: 'bold',
+          pointerEvents: 'none',
+          zIndex: '10'
         }}>
         Scroll to the right to view more →
         </div>
