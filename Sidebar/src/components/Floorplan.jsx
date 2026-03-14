@@ -270,7 +270,7 @@ return (
   }}>
     
     {/* --- 1. Fixed Header Section --- */}
-    <div className="p-4 bg-white shadow-sm z-10 relative">
+    <div className="p-4 bg-white shadow-sm z-10 relative" style={{marginLeft: '60px'}}>
       <label className="block text-sm font-medium text-gray-700 mb-1">
         Select Date:
       </label>
@@ -281,6 +281,7 @@ return (
           minDate={today}
           dateFormat="EEEE, MMMM d, yyyy"
           className="px-3 py-2 border border-gray-300 rounded-md shadow-sm w-full"
+          open={isMobile ? undefined : true}
         />
       </div>
     </div>
