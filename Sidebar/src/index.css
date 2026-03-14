@@ -287,10 +287,14 @@ button:focus-visible {
 @media (max-aspect-ratio: 1/1), (max-width: 768px) {
   .responsive-canvas {
     /* Forces the map to fill the height, creating horizontal scroll */
-    min-width: 100%;
-    min-height: 85%;
-    width: auto; 
+    height: 85%;
+    width: auto;
+    
+    /* 🚨 Safari Fixes below: */
+    min-height: 0;
+    min-width: 0;
     max-width: none; 
+    flex-shrink: 0;
   }
 }
 

@@ -282,6 +282,11 @@ return (
           dateFormat="EEEE, MMMM d, yyyy"
           className="px-3 py-2 border border-gray-300 rounded-md shadow-sm w-full"
           open={isMobile ? undefined : true}
+          onFocus={(e) => {
+            if (isMobile) {
+              e.target.blur();
+            }
+          }}
         />
       </div>
     </div>
@@ -312,7 +317,8 @@ return (
             width: '100%',          // Scale image to fill the wrapper width
             height: '100%',         // Scale image to fill the wrapper height
             display: 'block',
-            pointerEvents: 'none'
+            pointerEvents: 'none',
+            objectFit: 'contain'
           }} 
         />
 
