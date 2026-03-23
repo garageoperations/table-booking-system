@@ -11,7 +11,7 @@ export default function AdminPanel() {
   const [editingRow, setEditingRow] = useState(null);
   const [editFormData, setEditFormData] = useState({});
 
-  const webAppUrl = "https://script.google.com/macros/s/AKfycbwNuv7HbV_IazA8YAQjx4xsvKIezsqy-_qQleGkOLhikqh_oGyVJP8wZCKqUkE_s8M8Og/exec"; // <--- Make sure this is your URL
+  const webAppUrl = "https://script.google.com/macros/s/AKfycbxTpvXbFGH7RH3Xv4PNV1PExE2MmYk68-SoKExt7P8pYNvDNGWUmYs4aoYKk_kPxl0MZg/exec"; // <--- Make sure this is your URL
 
   // --- HELPER: Format the "Date Created" timestamp ---
   const formatTimestamp = (ts) => {

@@ -220,7 +220,7 @@ export default function BookingSidebar()  {
     setIsSubmitting(true);
 
     try {
-      const scriptURL = "https://script.google.com/macros/s/AKfycbwNuv7HbV_IazA8YAQjx4xsvKIezsqy-_qQleGkOLhikqh_oGyVJP8wZCKqUkE_s8M8Og/exec";
+      const scriptURL = "https://script.google.com/macros/s/AKfycbxTpvXbFGH7RH3Xv4PNV1PExE2MmYk68-SoKExt7P8pYNvDNGWUmYs4aoYKk_kPxl0MZg/exec";
       const response = await fetch(scriptURL, {
         method: "POST",
         body: JSON.stringify(data)

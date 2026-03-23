@@ -45,7 +45,7 @@ const baseHeight = 629;
 const tableLength = 60;
 const tableWidth = 60;
 
-const webAppUrl = "https://script.google.com/macros/s/AKfycbwNuv7HbV_IazA8YAQjx4xsvKIezsqy-_qQleGkOLhikqh_oGyVJP8wZCKqUkE_s8M8Og/exec"
+const webAppUrl = "https://script.google.com/macros/s/AKfycbxTpvXbFGH7RH3Xv4PNV1PExE2MmYk68-SoKExt7P8pYNvDNGWUmYs4aoYKk_kPxl0MZg/exec"
 
 const scrollRef = useRef(null);
 
